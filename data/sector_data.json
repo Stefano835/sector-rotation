@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-17T20:51:30.420055+00:00",
+  "updated_at": "2026-05-17T20:59:26.186159+00:00",
   "last_data_date": "2026-05-15",
   "tickers_obtained": 37,
   "tickers_total": 37,
@@ -2548,7 +2548,7 @@
             "name": "NVIDIA Corporation",
             "price": 225.32,
             "trailingPE": 46.1,
-            "forwardPE": 19.8,
+            "forwardPE": 19.7,
             "peg": 0.72,
             "marketCapB": 5457.4,
             "divYield": 0.02,
@@ -3060,7 +3060,7 @@
             "name": "NVIDIA Corporation",
             "price": 225.32,
             "trailingPE": 46.1,
-            "forwardPE": 19.8,
+            "forwardPE": 19.7,
             "peg": 0.72,
             "marketCapB": 5457.4,
             "divYield": 0.02,
@@ -6333,7 +6333,15 @@
             "perf_from_state": 12.0,
             "rel_from_state": 12.3,
             "picks_us": [],
-            "picks_it": []
+            "picks_it": [
+              {
+                "ticker": "TIT.MI",
+                "name": "TELECOM ITALIA",
+                "perf_3m": 13.2,
+                "pe_rel": 1.59,
+                "tag": "top_momentum"
+              }
+            ]
           },
           {
             "sector_name": "Semiconduttori",
@@ -6425,7 +6433,15 @@
             "perf_from_state": 12.0,
             "rel_from_state": 12.3,
             "picks_us": [],
-            "picks_it": []
+            "picks_it": [
+              {
+                "ticker": "TIT.MI",
+                "name": "TELECOM ITALIA",
+                "perf_3m": 13.2,
+                "pe_rel": 1.59,
+                "tag": "top_momentum"
+              }
+            ]
           },
           {
             "sector_name": "Semiconduttori",
@@ -6511,7 +6527,29 @@
             "perf_from_state": 51.8,
             "rel_from_state": 37.9,
             "picks_us": [],
-            "picks_it": []
+            "picks_it": [
+              {
+                "ticker": "SPM.MI",
+                "name": "SAIPEM",
+                "perf_3m": 41.4,
+                "pe_rel": 1.42,
+                "tag": "top_momentum"
+              },
+              {
+                "ticker": "TEN.MI",
+                "name": "TENARIS",
+                "perf_3m": 30.4,
+                "pe_rel": 0.75,
+                "tag": "top_momentum"
+              },
+              {
+                "ticker": "ENI.MI",
+                "name": "ENI",
+                "perf_3m": 30.2,
+                "pe_rel": 1.09,
+                "tag": "top_momentum"
+              }
+            ]
           }
         ]
       },
@@ -6567,7 +6605,15 @@
             "perf_from_state": 12.0,
             "rel_from_state": 12.3,
             "picks_us": [],
-            "picks_it": []
+            "picks_it": [
+              {
+                "ticker": "TIT.MI",
+                "name": "TELECOM ITALIA",
+                "perf_3m": 13.2,
+                "pe_rel": 1.59,
+                "tag": "top_momentum"
+              }
+            ]
           },
           {
             "sector_name": "Semiconduttori",
@@ -6653,7 +6699,29 @@
             "perf_from_state": 51.8,
             "rel_from_state": 37.9,
             "picks_us": [],
-            "picks_it": []
+            "picks_it": [
+              {
+                "ticker": "SPM.MI",
+                "name": "SAIPEM",
+                "perf_3m": 41.4,
+                "pe_rel": 1.42,
+                "tag": "top_momentum"
+              },
+              {
+                "ticker": "TEN.MI",
+                "name": "TENARIS",
+                "perf_3m": 30.4,
+                "pe_rel": 0.75,
+                "tag": "top_momentum"
+              },
+              {
+                "ticker": "ENI.MI",
+                "name": "ENI",
+                "perf_3m": 30.2,
+                "pe_rel": 1.09,
+                "tag": "top_momentum"
+              }
+            ]
           },
           {
             "sector_name": "Tecnologia",
@@ -6667,7 +6735,22 @@
             "perf_from_state": -0.1,
             "rel_from_state": 0.7,
             "picks_us": [],
-            "picks_it": []
+            "picks_it": [
+              {
+                "ticker": "TXT.MI",
+                "name": "TXT E-SOLUTIONS",
+                "perf_3m": 48.4,
+                "pe_rel": 1.4,
+                "tag": "top_momentum"
+              },
+              {
+                "ticker": "REY.MI",
+                "name": "REPLY",
+                "perf_3m": 3.9,
+                "pe_rel": 1.0,
+                "tag": "stagnant"
+              }
+            ]
           },
           {
             "sector_name": "Assicurazioni",
@@ -6681,7 +6764,22 @@
             "perf_from_state": 5.7,
             "rel_from_state": 2.6,
             "picks_us": [],
-            "picks_it": []
+            "picks_it": [
+              {
+                "ticker": "UNI.MI",
+                "name": "UNIPOL",
+                "perf_3m": 16.8,
+                "pe_rel": 0.86,
+                "tag": "top_momentum"
+              },
+              {
+                "ticker": "G.MI",
+                "name": "GENERALI",
+                "perf_3m": 12.0,
+                "pe_rel": 1.14,
+                "tag": "top_momentum"
+              }
+            ]
           }
         ]
       }
