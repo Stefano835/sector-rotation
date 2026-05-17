@@ -255,8 +255,8 @@
   }
   .holdings-sector-header .ticker-badge {
     font-family: var(--mono); font-size: 11px;
-    padding: 3px 10px; background: rgba(34,197,94,0.1);
-    color: var(--accent-lead); border: 1px solid rgba(34,197,94,0.3);
+    padding: 3px 10px; background: rgba(255,255,255,0.04);
+    color: var(--text-secondary); border: 1px solid var(--border-strong);
     border-radius: 3px; letter-spacing: 0.08em;
   }
   .pe-good { color: var(--accent-lead); font-weight: 600; }
@@ -387,16 +387,18 @@
     <div class="panel" id="holdings-usa-panel" style="display:none;">
       <div class="panel-header">
         <div class="panel-title">
-          <span class="subtitle">05 · Drill-down · Titoli nei settori IN TESTA</span>
+          <span class="subtitle">05 · Drill-down · Titoli nei settori leader e in ripresa</span>
           <h2>🎯 Top picks per P/E relativo</h2>
         </div>
       </div>
       <p style="color:var(--text-secondary);margin-bottom:20px;font-size:13px;line-height:1.6;">
-        Per ogni settore attualmente <span style="color:var(--accent-lead);font-weight:600;">In testa</span>,
-        i titoli principali ordinati per <b>P/E relativo</b> (P/E del titolo diviso la mediana del settore).
-        Valori <b>&lt; 1.0</b> = titolo più conveniente della media del settore.
-        Valori <b>&gt; 1.0</b> = titolo più caro del settore.
-        Questo evita confronti sbagliati tra settori (un P/E 35 in Tech è normale, in Banche è caro).
+        Per ogni settore <span style="color:var(--accent-lead);font-weight:600;">In testa</span>
+        (leader attuali) o <span style="color:var(--accent-improve);font-weight:600;">In ripresa</span>
+        (prossimi candidati), i titoli principali ordinati per <b>P/E relativo</b>
+        (P/E del titolo diviso la mediana del settore).
+        Valori <b>&lt; 1.0</b> = più conveniente della media del settore.
+        Valori <b>&gt; 1.0</b> = più caro.
+        Questo evita confronti sbagliati: un P/E 35 in Tech è normale, in Banche è caro.
       </p>
       <div id="holdings-usa-container"></div>
     </div>
@@ -452,13 +454,16 @@
     <div class="panel" id="holdings-eu-panel" style="display:none;">
       <div class="panel-header">
         <div class="panel-title">
-          <span class="subtitle">05 · Drill-down · Titoli nei settori IN TESTA</span>
-          <h2>🎯 Top picks per P/E relativo</h2>
+          <span class="subtitle">05 · Drill-down · Titoli italiani nei settori leader e in ripresa</span>
+          <h2>🇮🇹 Top picks Borsa Italiana</h2>
         </div>
       </div>
       <p style="color:var(--text-secondary);margin-bottom:20px;font-size:13px;line-height:1.6;">
-        Per ogni settore attualmente <span style="color:var(--accent-lead);font-weight:600;">In testa</span>,
-        i titoli principali ordinati per <b>P/E relativo</b> (sotto 1.0 = sconto rispetto alla mediana del settore).
+        Per ogni settore <span style="color:var(--accent-lead);font-weight:600;">In testa</span> o
+        <span style="color:var(--accent-improve);font-weight:600;">In ripresa</span>,
+        i principali titoli italiani quotati a Milano (suffisso <code>.MI</code>) ordinati per
+        <b>P/E relativo</b> (sotto 1.0 = sconto rispetto alla mediana del settore).
+        Alcuni settori hanno pochi nomi italiani puri: in quel caso la lista è più corta.
       </p>
       <div id="holdings-eu-container"></div>
     </div>
@@ -785,7 +790,7 @@ function renderHoldings(containerId, panelId, holdings) {
         <div class="holdings-sector-header">
           <h3>${info.sector_name}</h3>
           <span class="ticker-badge">${sectorTicker}</span>
-          <span class="state-badge state-In_testa">${info.sector_state}</span>
+          <span class="state-badge state-${info.sector_state.replace(/ /g,'_')}">${info.sector_state}</span>
         </div>
         <table class="sector-table">
           <thead>
