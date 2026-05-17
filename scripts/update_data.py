@@ -859,9 +859,10 @@ def build_portfolio_model(us_metrics, eu_metrics, us_holdings, eu_holdings):
         profile_items = []
         for a in allocations:
             s = a['sector']
-            ticker_raw = s.get('ticker_raw') or s.get('ticker')
-            picks_us = get_top_picks('USA', ticker_raw, 3) if s['region'] == 'USA' else []
-            picks_it = get_top_picks('EU', ticker_raw, 3) if s['region'] == 'EU' else []
+            # NB: holdings_dict usa 'ticker' semplificato (es. 'EXV2'), non 'ticker_raw' (es. 'EXV2.DE')
+            ticker_key = s.get('ticker')
+            picks_us = get_top_picks('USA', ticker_key, 3) if s['region'] == 'USA' else []
+            picks_it = get_top_picks('EU', ticker_key, 3) if s['region'] == 'EU' else []
             signal = s.get('signal') or {}
             
             profile_items.append({
