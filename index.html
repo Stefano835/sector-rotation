@@ -526,6 +526,92 @@
     border: 1px solid rgba(255,255,255,0.08);
   }
 
+  /* === PORTAFOGLIO MODELLO === */
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 1024px) {
+    .portfolio-grid { grid-template-columns: 1fr; }
+  }
+  .profile-card {
+    background: var(--bg-card-2);
+    border: 1px solid var(--border);
+    border-left-width: 3px;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .profile-icon { font-size: 24px; }
+  .profile-name {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .profile-balance {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .portfolio-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+  .portfolio-table th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    padding: 8px 6px 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .portfolio-table th.num { text-align: right; }
+  .portfolio-table td {
+    padding: 10px 6px 10px 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .portfolio-table td.num { text-align: right; }
+  .portfolio-table tr:last-child td { border-bottom: none; }
+  
+  /* Picks tabs */
+  .picks-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+  .picks-tab-btn {
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .picks-tab-btn:hover { color: var(--text-primary); }
+  .picks-tab-btn.active {
+    background: var(--bg-elev);
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+  }
+
   footer {
     margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border);
     font-family: var(--mono); font-size: 10px; color: var(--text-muted);
@@ -663,9 +749,7 @@
 
   <div class="tabs">
     <button class="tab-btn active" data-tab="quadro">📊 Quadro</button>
-    <button class="tab-btn" data-tab="usa">🇺🇸 USA</button>
-    <button class="tab-btn" data-tab="eu">🇪🇺 Europa</button>
-    <button class="tab-btn" data-tab="cross">⚖️ USA vs Europa</button>
+    <button class="tab-btn" data-tab="portafoglio">💼 Portafoglio</button>
   </div>
 
   <div class="tab-content active" id="tab-quadro">
@@ -684,182 +768,23 @@
     </div>
   </div>
 
-  <div class="tab-content" id="tab-usa">
-    <div class="kpi-row" id="kpi-usa"></div>
-    <div class="grid-main">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="subtitle">01 · Mappa di Rotazione</span>
-            <h2>Settori USA vs S&amp;P 500</h2>
-          </div>
-        </div>
-        <div class="rrg-container">
-          <div class="quadrant-label tl"><strong>EMERGENTE</strong>Forza ↓ · Velocità ↑</div>
-          <div class="quadrant-label tr"><strong>LEADER</strong>Forza ↑ · Velocità ↑</div>
-          <div class="quadrant-label bl"><strong>DEBOLE</strong>Forza ↓ · Velocità ↓</div>
-          <div class="quadrant-label br"><strong>IN RALLENTAMENTO</strong>Forza ↑ · Velocità ↓</div>
-          <svg id="rrg-usa" viewBox="0 0 600 460" preserveAspectRatio="none"></svg>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="subtitle">02 · Classifica</span>
-            <h2>I più forti</h2>
-          </div>
-        </div>
-        <table class="sector-table">
-          <thead><tr><th>#</th><th>Settore</th><th>Stato</th><th>Fase</th><th class="num">Forza</th></tr></thead>
-          <tbody id="top-usa"></tbody>
-        </table>
-        <div class="panel-header" style="margin-top:24px;margin-bottom:8px;">
-          <div class="panel-title">
-            <span class="subtitle">03 · Andamento</span>
-            <h2>Migliori 4 · 6 mesi</h2>
-          </div>
-        </div>
-        <div class="chart-container"><canvas id="chart-usa"></canvas></div>
-      </div>
-    </div>
-    <div class="panel">
+  <div class="tab-content" id="tab-portafoglio">
+    <div class="panel has-accent">
       <div class="panel-header">
         <div class="panel-title">
-          <span class="subtitle">04 · Tutti i settori</span>
-          <h2>Tabella completa</h2>
+          <span class="subtitle">Modello tematico · NON consulenza personalizzata</span>
+          <h2>💼 Portafoglio modello</h2>
         </div>
       </div>
-      <table class="sector-table" id="table-usa-full"></table>
-    </div>
-    <div class="panel" id="signals-usa-panel" style="display:none;">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="subtitle">05 · Storico segnali</span>
-          <h2>🚦 Da quando sono in stato attivo?</h2>
-        </div>
+      <div id="portfolio-disclaimer" style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.2);border-radius:6px;padding:14px 18px;margin-bottom:20px;font-size:12px;line-height:1.6;color:var(--text-secondary);">
+        <b style="color:var(--accent-improve);">⚠️ Modello tematico, non raccomandazione di investimento.</b><br>
+        Allocazione automatica costruita su stati, fasi ed età dei segnali. NON costituisce consulenza personalizzata. L'adeguatezza al profilo MiFID, alla situazione patrimoniale e agli obiettivi del singolo cliente resta a cura del consulente.
       </div>
-      <p style="color:var(--text-secondary);margin-bottom:20px;font-size:13px;line-height:1.6;">
-        Per ogni settore <b>Leader</b> o <b>Emergente</b>: <b>quando</b> il sistema ha dato il primo segnale
-        e <b>quanto avresti guadagnato</b> seguendolo. Per i settori Leader, vedi due performance:
-        dal momento del <b>primo segnale</b> (più aggressivo) e dalla <b>conferma di leadership</b> (più prudente).
-      </p>
-      <table class="sector-table" id="signals-usa-table"></table>
-    </div>
-    <div class="panel" id="holdings-usa-panel" style="display:none;">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="subtitle">06 · Drill-down · Titoli nei settori leader e in ripresa</span>
-          <h2>🎯 Top picks per P/E relativo</h2>
-        </div>
-      </div>
-      <p style="color:var(--text-secondary);margin-bottom:20px;font-size:13px;line-height:1.6;">
-        Per ogni settore <span style="color:var(--accent-lead);font-weight:600;">Leader</span>
-        (leader attuali) o <span style="color:var(--accent-improve);font-weight:600;">Emergente</span>
-        (prossimi candidati), i titoli principali ordinati per <b>P/E relativo</b>
-        (P/E del titolo diviso la mediana del settore).
-        Valori <b>&lt; 1.0</b> = più conveniente della media del settore.
-        Valori <b>&gt; 1.0</b> = più caro.
-        Questo evita confronti sbagliati: un P/E 35 in Tech è normale, in Banche è caro.
-      </p>
-      <div id="holdings-usa-container"></div>
+      <div id="portfolio-comment" style="background:var(--bg-card-2);border-left:3px solid var(--accent-gold);padding:16px 20px;margin-bottom:24px;font-size:13px;line-height:1.7;color:var(--text-primary);"></div>
+      <div id="portfolio-profiles"></div>
     </div>
   </div>
 
-  <div class="tab-content" id="tab-eu">
-    <div class="kpi-row" id="kpi-eu"></div>
-    <div class="grid-main">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="subtitle">01 · Mappa di Rotazione</span>
-            <h2>Settori Europa vs STOXX 600</h2>
-          </div>
-        </div>
-        <div class="rrg-container">
-          <div class="quadrant-label tl"><strong>EMERGENTE</strong>Forza ↓ · Velocità ↑</div>
-          <div class="quadrant-label tr"><strong>LEADER</strong>Forza ↑ · Velocità ↑</div>
-          <div class="quadrant-label bl"><strong>DEBOLE</strong>Forza ↓ · Velocità ↓</div>
-          <div class="quadrant-label br"><strong>IN RALLENTAMENTO</strong>Forza ↑ · Velocità ↓</div>
-          <svg id="rrg-eu" viewBox="0 0 600 460" preserveAspectRatio="none"></svg>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="subtitle">02 · Classifica</span>
-            <h2>I più forti</h2>
-          </div>
-        </div>
-        <table class="sector-table">
-          <thead><tr><th>#</th><th>Settore</th><th>Stato</th><th>Fase</th><th class="num">Forza</th></tr></thead>
-          <tbody id="top-eu"></tbody>
-        </table>
-        <div class="panel-header" style="margin-top:24px;margin-bottom:8px;">
-          <div class="panel-title">
-            <span class="subtitle">03 · Andamento</span>
-            <h2>Migliori 4 · 6 mesi</h2>
-          </div>
-        </div>
-        <div class="chart-container"><canvas id="chart-eu"></canvas></div>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="subtitle">04 · Tutti i settori</span>
-          <h2>Tabella completa</h2>
-        </div>
-      </div>
-      <table class="sector-table" id="table-eu-full"></table>
-    </div>
-    <div class="panel" id="signals-eu-panel" style="display:none;">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="subtitle">05 · Storico segnali</span>
-          <h2>🚦 Da quando sono in stato attivo?</h2>
-        </div>
-      </div>
-      <p style="color:var(--text-secondary);margin-bottom:20px;font-size:13px;line-height:1.6;">
-        Per ogni settore <b>Leader</b> o <b>Emergente</b>: quando il sistema ha dato il primo segnale
-        e quanto avresti guadagnato seguendolo.
-      </p>
-      <table class="sector-table" id="signals-eu-table"></table>
-    </div>
-    <div class="panel" id="holdings-eu-panel" style="display:none;">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="subtitle">06 · Drill-down · Titoli italiani nei settori leader e in ripresa</span>
-          <h2>🇮🇹 Top picks Borsa Italiana</h2>
-        </div>
-      </div>
-      <p style="color:var(--text-secondary);margin-bottom:20px;font-size:13px;line-height:1.6;">
-        Per ogni settore <span style="color:var(--accent-lead);font-weight:600;">Leader</span> o
-        <span style="color:var(--accent-improve);font-weight:600;">Emergente</span>,
-        i principali titoli italiani quotati a Milano (suffisso <code>.MI</code>) ordinati per
-        <b>P/E relativo</b> (sotto 1.0 = sconto rispetto alla mediana del settore).
-        Alcuni settori hanno pochi nomi italiani puri: in quel caso la lista è più corta.
-      </p>
-      <div id="holdings-eu-container"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-cross">
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="subtitle">⚖️ Confronto USA vs Europa</span>
-          <h2>Dove conviene stare?</h2>
-        </div>
-      </div>
-      <p style="color:var(--text-secondary);margin-bottom:20px;font-size:13px;line-height:1.6;">
-        Per ogni settore confrontato tra le due sponde: chi sta facendo meglio del proprio mercato di riferimento,
-        e chi vince nel confronto diretto USA contro Europa negli ultimi 3 mesi.
-      </p>
-      <div class="kpi-row" id="kpi-cross" style="margin-bottom:24px;"></div>
-      <table class="sector-table" id="table-cross"></table>
-      <div class="chart-cross"><canvas id="chart-cross"></canvas></div>
-    </div>
-  </div>
 
   <footer>
     Megatrend Sentinel v1.0 · Dati aggiornati automaticamente ogni giorno alle 22:00 UTC via GitHub Actions ·
@@ -1335,6 +1260,213 @@ function renderHoldings(containerId, panelId, holdings) {
   container.innerHTML = html;
 }
 
+function renderPortfolio(portfolio) {
+  // Commento di scenario
+  document.getElementById('portfolio-comment').innerHTML = portfolio.comment || '—';
+  
+  const container = document.getElementById('portfolio-profiles');
+  if (!portfolio.profiles || Object.keys(portfolio.profiles).length === 0) {
+    container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:30px;">Nessun profilo generato. Il sistema non rileva al momento settori operativamente validi.</p>';
+    return;
+  }
+  
+  const profileLabels = {
+    'prudente':   {label: 'PRUDENTE',   color: 'var(--accent-blue)',   icon: '🛡️'},
+    'bilanciato': {label: 'BILANCIATO', color: 'var(--accent-gold)',   icon: '⚖️'},
+    'aggressivo': {label: 'AGGRESSIVO', color: 'var(--accent-lag)',    icon: '🚀'},
+  };
+  
+  const fmt = v => v === null || v === undefined ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`;
+  const fmtSign = v => {
+    if (v === null || v === undefined) return '<span class="pe-na">—</span>';
+    const cls = v >= 0 ? 'up' : 'down';
+    const sign = v >= 0 ? '+' : '';
+    return `<span class="change ${cls}">${sign}${v.toFixed(1)}%</span>`;
+  };
+  
+  let html = '<div class="portfolio-grid">';
+  
+  ['prudente', 'bilanciato', 'aggressivo'].forEach(pname => {
+    const profile = portfolio.profiles[pname];
+    if (!profile) return;
+    const meta = profileLabels[pname];
+    
+    html += `
+      <div class="profile-card" style="border-color:${meta.color};">
+        <div class="profile-header">
+          <div class="profile-icon">${meta.icon}</div>
+          <div>
+            <div class="profile-name" style="color:${meta.color};">${meta.label}</div>
+            <div class="profile-balance">${profile.equity_pct}% azionario · ${profile.cash_pct}% cash/obbligazionario</div>
+          </div>
+        </div>
+        <table class="portfolio-table">
+          <thead>
+            <tr>
+              <th>Settore</th>
+              <th>Regione</th>
+              <th>Stato</th>
+              <th class="num">Peso</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+    
+    profile.allocations.forEach(item => {
+      const flag = item.region === 'USA' ? '🇺🇸' : '🇪🇺';
+      const stateClass = `state-${item.state.replace(/ /g,'_')}`;
+      html += `
+        <tr>
+          <td>
+            <div><b>${item.sector_name}</b></div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text-muted);">${item.sector_ticker}</div>
+          </td>
+          <td style="font-size:10px;">${flag} ${item.region}</td>
+          <td><span class="state-badge ${stateClass}">${item.state}</span></td>
+          <td class="num"><b style="color:${meta.color};font-size:14px;">${item.weight_pct.toFixed(1)}%</b></td>
+        </tr>
+      `;
+    });
+    
+    // Riga cash
+    html += `
+      <tr style="border-top:1px solid var(--border);">
+        <td><b>Cash / Obbligazionario</b></td>
+        <td colspan="2" style="color:var(--text-muted);font-size:10px;">Quota difensiva</td>
+        <td class="num"><b style="color:var(--text-secondary);font-size:14px;">${profile.cash_pct}%</b></td>
+      </tr>
+    `;
+    
+    html += '</tbody></table></div>';
+  });
+  
+  html += '</div>';
+  
+  // Sezione titoli operativi per ogni profilo (uso il bilanciato come default visivo)
+  const balanced = portfolio.profiles['bilanciato'];
+  if (balanced && balanced.allocations.length > 0) {
+    html += `
+      <div style="margin-top:32px;border-top:1px solid var(--border);padding-top:24px;">
+        <h3 style="font-family:var(--sans);font-size:18px;font-weight:600;margin-bottom:6px;">🎯 Titoli operativi suggeriti</h3>
+        <p style="color:var(--text-secondary);font-size:12px;margin-bottom:18px;">
+          Per ogni settore del modello, i top titoli per momentum corrente (Perf 3M) esclusi i Value trap. Tag automatici dal sistema.
+        </p>
+        <div class="picks-tabs">
+          <button class="picks-tab-btn active" onclick="switchPicksTab('it', this)">🇮🇹 Italia</button>
+          <button class="picks-tab-btn" onclick="switchPicksTab('us', this)">🇺🇸 USA</button>
+        </div>
+        <div id="picks-content"></div>
+      </div>
+    `;
+  }
+  
+  container.innerHTML = html;
+  
+  // Inizializza la vista Italia
+  if (balanced) {
+    renderPicksFor('it', balanced.allocations);
+  }
+}
+
+window.renderPicksFor = function(region, allocations) {
+  const container = document.getElementById('picks-content');
+  if (!container) return;
+  
+  const tagLabels = {
+    'top_momentum':   '🚀 Top momentum',
+    'premium_ok':     '💎 Premium ok',
+    'value_momentum': '🎯 Sconto + momentum',
+    'expensive_flat': '⚠️ Caro e fermo',
+    'stagnant':       '💤 Stagnante',
+  };
+  
+  const fmtSign = v => {
+    if (v === null || v === undefined) return '<span class="pe-na">—</span>';
+    const cls = v >= 0 ? 'up' : 'down';
+    const sign = v >= 0 ? '+' : '';
+    return `<span class="change ${cls}">${sign}${v.toFixed(1)}%</span>`;
+  };
+  
+  let html = '';
+  allocations.forEach(item => {
+    const picks = region === 'it' ? item.picks_it : item.picks_us;
+    if (!picks || picks.length === 0) {
+      // Per Italia se non ci sono titoli, mostra messaggio
+      if (region === 'it' && item.region === 'EU') {
+        html += `
+          <div style="margin-bottom:18px;">
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">
+              <b style="font-size:14px;">${item.sector_name}</b>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--text-muted);">${item.sector_ticker} · peso ${item.weight_pct}%</span>
+            </div>
+            <p style="color:var(--text-muted);font-size:11px;font-style:normal;padding:8px 12px;background:var(--bg-card-2);border-radius:4px;">Nessun titolo italiano puro per questo settore.</p>
+          </div>
+        `;
+      } else if (region === 'us' && item.region === 'USA') {
+        // skip
+      }
+      return;
+    }
+    
+    html += `
+      <div style="margin-bottom:18px;">
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+          <b style="font-size:14px;">${item.sector_name}</b>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text-muted);">${item.sector_ticker} · peso ${item.weight_pct}%</span>
+        </div>
+        <table class="sector-table" style="margin-bottom:0;">
+          <thead>
+            <tr>
+              <th>Codice</th>
+              <th>Nome</th>
+              <th class="num">P/E vs settore</th>
+              <th class="num">Perf 3M</th>
+              <th>Valutazione</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+    picks.forEach(p => {
+      const tagHtml = p.tag && tagLabels[p.tag]
+        ? `<span class="stock-tag tag-${p.tag}">${tagLabels[p.tag]}</span>`
+        : '';
+      let peLabel = '—';
+      let peClass = 'pe-na';
+      if (p.pe_rel !== null && p.pe_rel !== undefined) {
+        if (p.pe_rel < 0.85) { peClass = 'pe-good'; peLabel = `${p.pe_rel}× 🟢`; }
+        else if (p.pe_rel <= 1.15) { peClass = 'pe-fair'; peLabel = `${p.pe_rel}×`; }
+        else { peClass = 'pe-expensive'; peLabel = `${p.pe_rel}×`; }
+      }
+      html += `
+        <tr>
+          <td><span class="ticker">${p.ticker}</span></td>
+          <td><span class="sector-name">${p.name}</span></td>
+          <td class="num ${peClass}">${peLabel}</td>
+          <td class="num">${fmtSign(p.perf_3m)}</td>
+          <td>${tagHtml}</td>
+        </tr>
+      `;
+    });
+    html += '</tbody></table></div>';
+  });
+  
+  if (!html) {
+    html = '<p style="color:var(--text-muted);padding:20px;text-align:center;">Nessun titolo operativo disponibile per questa regione.</p>';
+  }
+  
+  container.innerHTML = html;
+};
+
+window.switchPicksTab = function(region, btn) {
+  document.querySelectorAll('.picks-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  const balanced = DATA.portfolio && DATA.portfolio.profiles && DATA.portfolio.profiles['bilanciato'];
+  if (balanced) {
+    renderPicksFor(region, balanced.allocations);
+  }
+};
+
 function renderQuadro(tableId) {
   // Combina USA + EU in un'unica lista, solo settori con segnale
   const allRows = [];
@@ -1505,30 +1637,10 @@ async function loadData() {
 
   // Render Quadro (vista combinata USA + EU con tutti i segnali)
   renderQuadro('table-quadro');
-
-  // Render USA
-  if (DATA.us && DATA.us.sectors.length > 0) {
-    renderKPI('kpi-usa', DATA.us.sectors, 'S&P');
-    renderRRG('rrg-usa', DATA.us.sectors);
-    renderTopTable('top-usa', DATA.us.sectors);
-    renderFullTable('table-usa-full', DATA.us.sectors, 'S&P 500');
-    renderLineChart('chart-usa', DATA.us.sectors);
-    renderSignals('signals-usa-table', 'signals-usa-panel', DATA.us.sectors, 'S&P 500');
-    renderHoldings('holdings-usa-container', 'holdings-usa-panel', DATA.us.holdings);
-  }
-  // Render EU
-  if (DATA.eu && DATA.eu.sectors.length > 0) {
-    renderKPI('kpi-eu', DATA.eu.sectors, 'STOXX');
-    renderRRG('rrg-eu', DATA.eu.sectors);
-    renderTopTable('top-eu', DATA.eu.sectors);
-    renderFullTable('table-eu-full', DATA.eu.sectors, 'STOXX 600');
-    renderLineChart('chart-eu', DATA.eu.sectors);
-    renderSignals('signals-eu-table', 'signals-eu-panel', DATA.eu.sectors, 'STOXX 600');
-    renderHoldings('holdings-eu-container', 'holdings-eu-panel', DATA.eu.holdings);
-  }
-  // Render Cross
-  if (DATA.cross && DATA.cross.length > 0) {
-    renderCross(DATA.cross);
+  
+  // Render Portafoglio
+  if (DATA.portfolio) {
+    renderPortfolio(DATA.portfolio);
   }
 }
 
