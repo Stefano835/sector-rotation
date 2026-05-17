@@ -105,24 +105,59 @@ US_HOLDINGS = {
 }
 
 EU_HOLDINGS = {
-    'EXV3.DE': ['ASML.AS', 'SAP.DE', 'STMPA.PA', 'CAP.PA', 'DSY.PA', 'IFX.DE', 'NOK.HE', 'ERIC-B.ST', 'BESI.AS'],
-    'EXV1.DE': ['HSBA.L', 'UBSG.SW', 'BNP.PA', 'SAN.MC', 'ISP.MI', 'NWG.L', 'UCG.MI', 'INGA.AS', 'BBVA.MC', 'BARC.L', 'LLOY.L'],
-    'EXV5.DE': ['STLAM.MI', 'MBG.DE', 'BMW.DE', 'VOW3.DE', 'RACE.MI', 'RNO.PA', 'P911.DE'],
-    'EXH1.DE': ['SHEL.L', 'TTE.PA', 'BP.L', 'ENI.MI', 'EQNR.OL', 'REP.MC'],
-    'EXV4.DE': ['NOVO-B.CO', 'ROG.SW', 'AZN.L', 'NOVN.SW', 'SAN.PA', 'GSK.L', 'MRK.DE', 'BAYN.DE'],
-    'EXH5.DE': ['ALV.DE', 'ZURN.SW', 'CS.PA', 'MUV2.DE', 'G.MI', 'AV.L', 'PRU.L', 'LGEN.L'],
-    'EXH3.DE': ['DB1.DE', 'AMS.MC', 'INVE-B.ST', '3I.L'],
-    'EXH2.DE': ['AD.AS', 'CA.PA', 'TSCO.L', 'KGF.L', 'ITX.MC'],
-    'EXH8.DE': ['UMG.AS', 'WPP.L', 'PSON.L', 'PUB.PA', 'RELX.L'],
-    'EXH4.DE': ['SIE.DE', 'SU.PA', 'AIR.PA', 'ABBN.SW', 'MT.AS', 'PRX.AS', 'SAF.PA', 'BA.L'],
-    'EXV8.DE': ['CRH', 'HOLN.SW', 'SGO.PA', 'VIE.PA', 'FERG.L'],
-    'EXV6.DE': ['RIO.L', 'GLEN.L', 'AAL.L', 'ANTO.L', 'BAS.DE'],
-    'EXH6.DE': ['MC.PA', 'NESN.SW', 'RMS.PA', 'CFR.SW', 'KER.PA', 'OR.PA'],
-    'EXV2.DE': ['DTE.DE', 'VOD.L', 'TEF.MC', 'ORA.PA', 'BT-A.L'],
-    'EXH7.DE': ['NESN.SW', 'ABI.BR', 'DGE.L', 'PERP.PA', 'KHC.MI'],
-    'EXV7.DE': ['LIN', 'BAS.DE', 'AKZA.AS', 'GIVN.SW', 'AI.PA'],
-    'EXH9.DE': ['IBE.MC', 'ENEL.MI', 'NG.L', 'SSE.L', 'ENGI.PA'],
-    'EXV9.DE': ['LHA.DE', 'IAG.L', 'AF.PA', 'AML.L', 'CCL.L'],
+    # Tecnologia · STM e i pochi nomi tech italiani
+    'EXV3.DE': ['STM.MI', 'REY.MI', 'TXT.MI', 'DEA.MI', 'TIPRA.MI'],
+    
+    # Banche · settore italiano per eccellenza
+    'EXV1.DE': ['ISP.MI', 'UCG.MI', 'BMPS.MI', 'BAMI.MI', 'BPER.MI', 'MB.MI', 'CRG.MI', 'BPSO.MI'],
+    
+    # Automobili & Componenti · Stellantis, Ferrari, Pirelli, Brembo
+    'EXV5.DE': ['STLAM.MI', 'RACE.MI', 'PIRC.MI', 'BRE.MI', 'IVG.MI'],
+    
+    # Energia · ENI, Tenaris, Saras, Snam, ERG
+    'EXH1.DE': ['ENI.MI', 'TEN.MI', 'SAR.MI', 'ERG.MI', 'SPM.MI'],
+    
+    # Sanità · Recordati, DiaSorin, Amplifon
+    'EXV4.DE': ['REC.MI', 'DIA.MI', 'AMP.MI', 'PHM.MI', 'GVS.MI'],
+    
+    # Assicurazioni · Generali, Unipol
+    'EXH5.DE': ['G.MI', 'US.MI', 'UNI.MI'],
+    
+    # Servizi finanziari · Azimut, FinecoBank, Mediolanum, Banca Generali
+    'EXH3.DE': ['AZM.MI', 'FBK.MI', 'BMED.MI', 'BGN.MI', 'ANIM.MI'],
+    
+    # Retail · pochi nomi puri italiani
+    'EXH2.DE': ['OVS.MI', 'GEO.MI', 'ESPR.MI'],
+    
+    # Media · MediaForEurope (ex-Mediaset), Cairo, RCS, Mondadori
+    'EXH8.DE': ['MFEA.MI', 'CAI.MI', 'RCS.MI', 'MN.MI'],
+    
+    # Industriali · Leonardo, Prysmian, Interpump, Webuild
+    'EXH4.DE': ['LDO.MI', 'PRY.MI', 'IP.MI', 'WBD.MI', 'AVIO.MI', 'DAN.MI'],
+    
+    # Costruzioni · Buzzi, Webuild, Salcef
+    'EXV8.DE': ['BZU.MI', 'WBD.MI', 'SCF.MI'],
+    
+    # Risorse base · pochi nomi italiani puri (Tenaris è anche qui)
+    'EXV6.DE': ['TEN.MI', 'PRY.MI'],
+    
+    # Beni personali · Moncler, Brunello, Tod's, Ferragamo, Geox (luxury Made in Italy)
+    'EXH6.DE': ['MONC.MI', 'BC.MI', 'TOD.MI', 'FCT.MI', 'GEO.MI', 'TPRO.MI'],
+    
+    # Telecomunicazioni · TIM, Inwit
+    'EXV2.DE': ['TIT.MI', 'INW.MI'],
+    
+    # Alimentari & Bevande · Campari, De Longhi, Newlat
+    'EXH7.DE': ['CPR.MI', 'DLG.MI', 'NL.MI'],
+    
+    # Chimica · pochi nomi italiani
+    'EXV7.DE': ['ECNL.MI', 'ICOR.MI'],
+    
+    # Utility · grande forza in Italia: Enel, Snam, Terna, Italgas, A2A, Hera, Iren
+    'EXH9.DE': ['ENEL.MI', 'SRG.MI', 'TRN.MI', 'ITG.MI', 'A2A.MI', 'HER.MI', 'IRE.MI', 'ACE.MI'],
+    
+    # Viaggi & Tempo libero · pochi nomi italiani puri
+    'EXV9.DE': ['MARR.MI', 'IG.MI'],
 }
 
 
@@ -457,12 +492,9 @@ def compute_holdings_for_sector(sector_ticker, holdings_list):
 
 
 def compute_all_holdings(metrics_list, holdings_dict, max_sectors=None):
-    """Per i settori IN TESTA (o un sottoinsieme), calcola holdings con P/E.
-    
-    Se max_sectors None, processa solo settori 'In testa'.
-    Altrimenti processa top N settori per Forza."""
+    """Per i settori IN TESTA o IN RIPRESA, calcola holdings con P/E."""
     if max_sectors is None:
-        target_sectors = [m for m in metrics_list if m.get('state') == 'In testa']
+        target_sectors = [m for m in metrics_list if m.get('state') in ('In testa', 'In ripresa')]
     else:
         sorted_metrics = sorted(metrics_list, key=lambda m: m.get('rsRatio', 0), reverse=True)
         target_sectors = sorted_metrics[:max_sectors]
@@ -517,14 +549,14 @@ def main():
     cross_rows = compute_cross_region(prices)
     print(f"  {len(cross_rows)} coppie cross-region")
     
-    # Holdings drill-down: solo per settori IN TESTA (per non sovraccaricare)
-    print("\nDrill-down titoli per settori IN TESTA (USA)...")
+    # Holdings drill-down: settori IN TESTA + IN RIPRESA
+    print("\nDrill-down titoli per settori IN TESTA + IN RIPRESA (USA)...")
     us_holdings = compute_all_holdings(us_metrics, US_HOLDINGS)
     print(f"  {len(us_holdings)} settori USA elaborati")
     
-    print("Drill-down titoli per settori IN TESTA (EU)...")
+    print("Drill-down titoli per settori IN TESTA + IN RIPRESA (EU/Italia)...")
     eu_holdings = compute_all_holdings(eu_metrics, EU_HOLDINGS)
-    print(f"  {len(eu_holdings)} settori EU elaborati")
+    print(f"  {len(eu_holdings)} settori EU/Italia elaborati")
     
     # Date più recente nei dati
     last_data_date = prices.index[-1].strftime('%Y-%m-%d')
