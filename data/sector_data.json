@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-17T17:38:52.871138+00:00",
+  "updated_at": "2026-05-17T19:38:01.533941+00:00",
   "last_data_date": "2026-05-15",
   "tickers_obtained": 37,
   "tickers_total": 37,
@@ -283,7 +283,16 @@
             "value": 93.04
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-04-17",
+          "signalDate": "2026-04-17",
+          "weeksFromState": 4,
+          "weeksFromSignal": 4,
+          "perfFromState": -2.5,
+          "perfFromSignal": -2.5,
+          "relFromState": -6.6,
+          "relFromSignal": -6.6
+        }
       },
       {
         "ticker": "XLV",
@@ -417,7 +426,16 @@
             "value": 93.54
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-03-06",
+          "signalDate": "2026-03-06",
+          "weeksFromState": 10,
+          "weeksFromSignal": 10,
+          "perfFromState": -4.6,
+          "perfFromSignal": -4.6,
+          "relFromState": -14.8,
+          "relFromSignal": -14.8
+        }
       },
       {
         "ticker": "XLY",
@@ -551,7 +569,16 @@
             "value": 90.98
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-08",
+          "signalDate": "2026-05-08",
+          "weeksFromState": 1,
+          "weeksFromSignal": 1,
+          "perfFromState": -3.1,
+          "perfFromSignal": -3.1,
+          "relFromState": -3.3,
+          "relFromSignal": -3.3
+        }
       },
       {
         "ticker": "XLP",
@@ -685,7 +712,16 @@
             "value": 96.78
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-04-03",
+          "signalDate": "2026-04-03",
+          "weeksFromState": 6,
+          "weeksFromSignal": 6,
+          "perfFromState": 2.4,
+          "perfFromSignal": 2.4,
+          "relFromState": -9.8,
+          "relFromSignal": -9.8
+        }
       },
       {
         "ticker": "XLE",
@@ -962,7 +998,16 @@
             "value": 97.92
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-08",
+          "signalDate": "2026-05-08",
+          "weeksFromState": 1,
+          "weeksFromSignal": 1,
+          "perfFromState": -1.0,
+          "perfFromSignal": -1.0,
+          "relFromState": -1.2,
+          "relFromSignal": -1.2
+        }
       },
       {
         "ticker": "XLB",
@@ -1096,7 +1141,16 @@
             "value": 98.01
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-08",
+          "signalDate": "2026-05-08",
+          "weeksFromState": 1,
+          "weeksFromSignal": 1,
+          "perfFromState": -2.5,
+          "perfFromSignal": -2.5,
+          "relFromState": -2.7,
+          "relFromSignal": -2.7
+        }
       },
       {
         "ticker": "XLU",
@@ -1230,7 +1284,16 @@
             "value": 93.24
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-04-17",
+          "signalDate": "2026-04-17",
+          "weeksFromState": 4,
+          "weeksFromSignal": 4,
+          "perfFromState": -5.0,
+          "perfFromSignal": -5.0,
+          "relFromState": -9.0,
+          "relFromSignal": -9.0
+        }
       },
       {
         "ticker": "XLRE",
@@ -1364,7 +1427,16 @@
             "value": 95.97
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-04-24",
+          "signalDate": "2026-04-24",
+          "weeksFromState": 3,
+          "weeksFromSignal": 3,
+          "perfFromState": -1.4,
+          "perfFromSignal": -1.4,
+          "relFromState": -4.9,
+          "relFromSignal": -4.9
+        }
       },
       {
         "ticker": "XLC",
@@ -1498,7 +1570,16 @@
             "value": 90.26
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-03-27",
+          "signalDate": "2026-03-27",
+          "weeksFromState": 7,
+          "weeksFromSignal": 7,
+          "perfFromState": 8.4,
+          "perfFromSignal": 8.4,
+          "relFromState": -8.1,
+          "relFromSignal": -8.1
+        }
       },
       {
         "ticker": "SOXX",
@@ -1775,7 +1856,16 @@
             "value": 98.85
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-01",
+          "signalDate": "2026-05-01",
+          "weeksFromState": 2,
+          "weeksFromSignal": 2,
+          "perfFromState": -0.3,
+          "perfFromSignal": -0.3,
+          "relFromState": -2.8,
+          "relFromSignal": -2.8
+        }
       },
       {
         "ticker": "KRE",
@@ -1909,7 +1999,16 @@
             "value": 95.47
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-08",
+          "signalDate": "2026-05-08",
+          "weeksFromState": 1,
+          "weeksFromSignal": 1,
+          "perfFromState": -4.1,
+          "perfFromSignal": -4.1,
+          "relFromState": -4.3,
+          "relFromSignal": -4.3
+        }
       },
       {
         "ticker": "XHB",
@@ -2043,7 +2142,16 @@
             "value": 90.9
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-01",
+          "signalDate": "2026-05-01",
+          "weeksFromState": 2,
+          "weeksFromSignal": 2,
+          "perfFromState": -8.3,
+          "perfFromSignal": -8.3,
+          "relFromState": -10.9,
+          "relFromSignal": -10.9
+        }
       },
       {
         "ticker": "XRT",
@@ -2177,7 +2285,16 @@
             "value": 89.5
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-04-24",
+          "signalDate": "2026-04-24",
+          "weeksFromState": 3,
+          "weeksFromSignal": 3,
+          "perfFromState": -7.8,
+          "perfFromSignal": -7.8,
+          "relFromState": -11.3,
+          "relFromSignal": -11.3
+        }
       },
       {
         "ticker": "ITA",
@@ -2311,7 +2428,16 @@
             "value": 96.51
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-04-24",
+          "signalDate": "2026-04-24",
+          "weeksFromState": 3,
+          "weeksFromSignal": 3,
+          "perfFromState": 0.7,
+          "perfFromSignal": 0.7,
+          "relFromState": -2.9,
+          "relFromSignal": -2.9
+        }
       }
     ],
     "holdings": {
@@ -3260,7 +3386,16 @@
             "value": 103.03
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-08",
+          "signalDate": "2026-05-08",
+          "weeksFromState": 1,
+          "weeksFromSignal": 1,
+          "perfFromState": -1.3,
+          "perfFromSignal": -1.3,
+          "relFromState": -0.5,
+          "relFromSignal": -0.5
+        }
       },
       {
         "ticker": "EXV5",
@@ -3394,7 +3529,16 @@
             "value": 95.09
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-15",
+          "signalDate": "2026-05-15",
+          "weeksFromState": 0,
+          "weeksFromSignal": 0,
+          "perfFromState": 0.0,
+          "perfFromSignal": 0.0,
+          "relFromState": 0.0,
+          "relFromSignal": 0.0
+        }
       },
       {
         "ticker": "EXH1",
@@ -3671,7 +3815,16 @@
             "value": 93.44
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-04-10",
+          "signalDate": "2026-04-10",
+          "weeksFromState": 5,
+          "weeksFromSignal": 5,
+          "perfFromState": -3.5,
+          "perfFromSignal": -3.5,
+          "relFromState": -2.9,
+          "relFromSignal": -2.9
+        }
       },
       {
         "ticker": "EXH5",
@@ -4234,7 +4387,16 @@
             "value": 91.99
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-04-24",
+          "signalDate": "2026-04-24",
+          "weeksFromState": 3,
+          "weeksFromSignal": 3,
+          "perfFromState": -4.9,
+          "perfFromSignal": -4.9,
+          "relFromState": -4.8,
+          "relFromSignal": -4.8
+        }
       },
       {
         "ticker": "EXH4",
@@ -4368,7 +4530,16 @@
             "value": 96.27
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-15",
+          "signalDate": "2026-05-15",
+          "weeksFromState": 0,
+          "weeksFromSignal": 0,
+          "perfFromState": 0.0,
+          "perfFromSignal": 0.0,
+          "relFromState": 0.0,
+          "relFromSignal": 0.0
+        }
       },
       {
         "ticker": "EXV8",
@@ -4502,7 +4673,16 @@
             "value": 95.24
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-15",
+          "signalDate": "2026-05-15",
+          "weeksFromState": 0,
+          "weeksFromSignal": 0,
+          "perfFromState": 0.0,
+          "perfFromSignal": 0.0,
+          "relFromState": 0.0,
+          "relFromSignal": 0.0
+        }
       },
       {
         "ticker": "EXV6",
@@ -4636,7 +4816,16 @@
             "value": 105.3
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-01",
+          "signalDate": "2026-05-01",
+          "weeksFromState": 2,
+          "weeksFromSignal": 2,
+          "perfFromState": 4.9,
+          "perfFromSignal": 4.9,
+          "relFromState": 4.2,
+          "relFromSignal": 4.2
+        }
       },
       {
         "ticker": "EXH6",
@@ -5342,7 +5531,16 @@
             "value": 102.0
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-04-10",
+          "signalDate": "2026-04-10",
+          "weeksFromState": 5,
+          "weeksFromSignal": 5,
+          "perfFromState": -7.1,
+          "perfFromSignal": -7.1,
+          "relFromState": -6.6,
+          "relFromSignal": -6.6
+        }
       },
       {
         "ticker": "EXV9",
@@ -5476,7 +5674,16 @@
             "value": 94.63
           }
         ],
-        "signal": null
+        "signal": {
+          "stateEntryDate": "2026-05-15",
+          "signalDate": "2026-05-15",
+          "weeksFromState": 0,
+          "weeksFromSignal": 0,
+          "perfFromState": 0.0,
+          "perfFromSignal": 0.0,
+          "relFromState": 0.0,
+          "relFromSignal": 0.0
+        }
       }
     ],
     "holdings": {
