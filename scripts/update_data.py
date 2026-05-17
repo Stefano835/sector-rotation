@@ -264,6 +264,96 @@ def classify_quadrant(rs, mom):
     return 'In calo'
 
 
+def find_signal_dates(rrg_df, current_state):
+    """
+    Per i settori in stato attivo (testa/ripresa), trova:
+    - state_entry_date: quando è iniziato lo stato attuale (croci degli assi)
+    - signal_date: quando è stato dato il PRIMO segnale (entrata in ripresa)
+    
+    Per In ripresa: signal_date == state_entry_date
+    Per In testa: signal_date può essere precedente (quando era in ripresa)
+    """
+    if rrg_df is None or len(rrg_df) < 5:
+        return None
+    
+    rs = rrg_df['rs_ratio'].values
+    mom = rrg_df['rs_momentum'].values
+    dates = rrg_df.index
+    n = len(rs)
+    
+    result = {'state_entry_date': None, 'signal_date': None}
+    
+    if current_state == 'In testa':
+        # entry: ultima volta che RS è passato da <100 a >=100
+        entry_idx = None
+        for i in range(n - 1, 0, -1):
+            if rs[i] >= 100 and rs[i-1] < 100:
+                entry_idx = i
+                break
+        if entry_idx is None and rs[0] >= 100:
+            entry_idx = 0  # già sopra 100 dall'inizio del periodo
+        
+        if entry_idx is not None:
+            result['state_entry_date'] = dates[entry_idx].strftime('%Y-%m-%d')
+            
+            # signal: cercando all'indietro da entry_idx, quando momentum è passato da <100 a >=100
+            signal_idx = entry_idx
+            for i in range(entry_idx, 0, -1):
+                if mom[i] >= 100 and mom[i-1] < 100:
+                    signal_idx = i
+                    break
+            result['signal_date'] = dates[signal_idx].strftime('%Y-%m-%d')
+    
+    elif current_state == 'In ripresa':
+        # entry: ultima volta che momentum è passato da <100 a >=100
+        entry_idx = None
+        for i in range(n - 1, 0, -1):
+            if mom[i] >= 100 and mom[i-1] < 100:
+                entry_idx = i
+                break
+        if entry_idx is not None:
+            result['state_entry_date'] = dates[entry_idx].strftime('%Y-%m-%d')
+            result['signal_date'] = result['state_entry_date']
+    
+    return result if result['state_entry_date'] else None
+
+
+def perf_since(prices, date_str):
+    """Calcola % di ritorno tra date_str e l'ultimo prezzo disponibile."""
+    if not date_str or prices is None or len(prices) == 0:
+        return None
+    try:
+        target = pd.to_datetime(date_str)
+        idx = prices.index
+        if idx.tz is not None:
+            idx = idx.tz_localize(None)
+            prices = prices.copy()
+            prices.index = idx
+        valid = prices[prices.index >= target]
+        if len(valid) == 0:
+            return None
+        start_price = float(valid.iloc[0])
+        end_price = float(prices.iloc[-1])
+        return ((end_price / start_price) - 1) * 100
+    except Exception:
+        return None
+
+
+def weeks_between(date_str, end_date):
+    """Settimane tra date_str e end_date (Timestamp o stringa)."""
+    if not date_str:
+        return None
+    try:
+        d1 = pd.to_datetime(date_str)
+        d2 = pd.to_datetime(end_date) if isinstance(end_date, str) else end_date
+        if hasattr(d2, 'tz') and d2.tz is not None:
+            d2 = d2.tz_localize(None)
+        delta = (d2 - d1).days
+        return max(0, int(round(delta / 7)))
+    except Exception:
+        return None
+
+
 def classify_stage(prices, ma_weeks=30):
     weekly = prices.resample('W-FRI').last().dropna()
     if len(weekly) < ma_weeks + 8:
@@ -335,6 +425,33 @@ def compute_sector_metrics(prices_df, bench_ticker, sector_dict):
             for d, v in weeks_26.items()
         ]
         
+        # Storico segnali · solo per stati attivi (testa/ripresa)
+        signal_info = None
+        if quadrant in ('In testa', 'In ripresa'):
+            sig = find_signal_dates(rrg, quadrant)
+            if sig:
+                last_data_date = sym_prices.index[-1]
+                perf_from_state = perf_since(sym_prices, sig['state_entry_date'])
+                perf_from_signal = perf_since(sym_prices, sig['signal_date'])
+                
+                # Perf vs benchmark dalle stesse date
+                bench_for_perf = bench_series.copy()
+                if bench_for_perf.index.tz is not None:
+                    bench_for_perf.index = bench_for_perf.index.tz_localize(None)
+                perf_bench_state = perf_since(bench_for_perf, sig['state_entry_date'])
+                perf_bench_signal = perf_since(bench_for_perf, sig['signal_date'])
+                
+                signal_info = {
+                    'stateEntryDate': sig['state_entry_date'],
+                    'signalDate': sig['signal_date'],
+                    'weeksFromState': weeks_between(sig['state_entry_date'], last_data_date),
+                    'weeksFromSignal': weeks_between(sig['signal_date'], last_data_date),
+                    'perfFromState': round(perf_from_state, 1) if perf_from_state is not None else None,
+                    'perfFromSignal': round(perf_from_signal, 1) if perf_from_signal is not None else None,
+                    'relFromState': round(perf_from_state - perf_bench_state, 1) if (perf_from_state is not None and perf_bench_state is not None) else None,
+                    'relFromSignal': round(perf_from_signal - perf_bench_signal, 1) if (perf_from_signal is not None and perf_bench_signal is not None) else None,
+                }
+        
         display_ticker = ticker.replace('.DE', '').replace('.US', '')
         
         rows.append({
@@ -352,6 +469,7 @@ def compute_sector_metrics(prices_df, bench_ticker, sector_dict):
             'tailRS': tail_rs,
             'tailMom': tail_mom,
             'rsRatioSeries': rs_series,
+            'signal': signal_info,
         })
     
     return rows
@@ -401,28 +519,49 @@ def compute_cross_region(prices_df):
 # ============================================================
 # HOLDINGS · Drill-down su singoli titoli con P/E
 # ============================================================
-def fetch_ticker_fundamentals(symbol):
-    """Recupera P/E, market cap, nome, ecc. per un singolo ticker."""
+def fetch_ticker_fundamentals(symbol, signal_date=None):
+    """Recupera P/E, market cap, nome, performance per un singolo ticker.
+    Se signal_date è fornita, calcola anche la perf da quella data."""
     try:
         tk = yf.Ticker(symbol)
         info = tk.info or {}
         
-        # Prezzo corrente e storia 13W per performance
-        hist = tk.history(period='6mo', auto_adjust=True)
+        # Periodo esteso per coprire signal_date anche lontane
+        hist = tk.history(period='2y', auto_adjust=True)
         if hist.empty:
             return None
         
         last_close = float(hist['Close'].iloc[-1])
         roc_13w = None
         roc_ytd = None
+        perf_from_signal = None
+        
         if len(hist) >= 65:
             roc_13w = float(((last_close / hist['Close'].iloc[-65]) - 1) * 100)
         
-        # YTD: trova il primo giorno dell'anno
+        # YTD
         current_year = hist.index[-1].year
         ytd_data = hist[hist.index.year == current_year]
         if not ytd_data.empty:
             roc_ytd = float(((last_close / ytd_data['Close'].iloc[0]) - 1) * 100)
+        
+        # Performance dal signal_date (se fornito)
+        if signal_date:
+            try:
+                target = pd.to_datetime(signal_date)
+                hist_idx = hist.index
+                if hist_idx.tz is not None:
+                    hist_idx = hist_idx.tz_localize(None)
+                    hist_local = hist.copy()
+                    hist_local.index = hist_idx
+                else:
+                    hist_local = hist
+                valid = hist_local[hist_local.index >= target]
+                if len(valid) > 0:
+                    start_price = float(valid['Close'].iloc[0])
+                    perf_from_signal = ((last_close / start_price) - 1) * 100
+            except Exception:
+                pass
         
         # P/E e altri multipli
         trailing_pe = info.get('trailingPE')
@@ -431,7 +570,6 @@ def fetch_ticker_fundamentals(symbol):
         market_cap = info.get('marketCap')
         div_yield = info.get('dividendYield')
         
-        # Nome breve, max 30 char
         name = info.get('shortName') or info.get('longName') or symbol
         if name and len(name) > 30:
             name = name[:28] + '..'
@@ -447,33 +585,37 @@ def fetch_ticker_fundamentals(symbol):
             'divYield': round(float(div_yield) * 100, 2) if div_yield else None,
             'roc13w': round(roc_13w, 1) if roc_13w is not None else None,
             'rocYtd': round(roc_ytd, 1) if roc_ytd is not None else None,
+            'perfFromSignal': round(perf_from_signal, 1) if perf_from_signal is not None else None,
         }
     except Exception as e:
         print(f"    Failed {symbol}: {e}", file=sys.stderr)
         return None
 
 
-def compute_holdings_for_sector(sector_ticker, holdings_list):
-    """Recupera fundamentals per tutte le holding di un settore e calcola
-    il P/E relativo (vs mediana del settore)."""
-    print(f"  Holdings {sector_ticker}: scarico {len(holdings_list)} titoli...")
+def compute_holdings_for_sector(sector_ticker, holdings_list, signal_date=None, etf_perf_from_signal=None):
+    """Recupera fundamentals per tutte le holding di un settore e calcola:
+    - P/E relativo (vs mediana del settore)
+    - Performance dal segnale (se signal_date fornita)
+    - Performance vs ETF settore (se etf_perf_from_signal fornita)
+    - Tag 'premium giustificato' per titoli con P/E alto MA outperformance
+    """
+    print(f"  Holdings {sector_ticker}: scarico {len(holdings_list)} titoli (signal={signal_date})...")
     
     rows = []
     for sym in holdings_list:
-        fund = fetch_ticker_fundamentals(sym)
+        fund = fetch_ticker_fundamentals(sym, signal_date=signal_date)
         if fund:
             rows.append(fund)
     
     if not rows:
         return []
     
-    # Calcola mediana P/E settore (solo per titoli con P/E valido)
+    # P/E relativo (vs mediana settore)
     valid_pe = [r['trailingPE'] for r in rows if r['trailingPE'] is not None]
     if valid_pe:
         median_pe = float(np.median(valid_pe))
         for r in rows:
             if r['trailingPE'] is not None:
-                # peRelative: 1.0 = in linea col settore, <1 = sconto, >1 = premium
                 r['peRelative'] = round(r['trailingPE'] / median_pe, 2)
             else:
                 r['peRelative'] = None
@@ -481,7 +623,28 @@ def compute_holdings_for_sector(sector_ticker, holdings_list):
         for r in rows:
             r['peRelative'] = None
     
-    # Ordina: prima per P/E relativo crescente (più convenienti), poi per market cap
+    # Performance relativa vs ETF settore
+    for r in rows:
+        if r.get('perfFromSignal') is not None and etf_perf_from_signal is not None:
+            r['perfVsEtf'] = round(r['perfFromSignal'] - etf_perf_from_signal, 1)
+        else:
+            r['perfVsEtf'] = None
+        
+        # Tag interpretativo
+        # Premium giustificato = P/E alto vs settore + perf > ETF
+        # Sopravvalutato = P/E alto + perf < ETF
+        # Sconto + momentum = P/E basso + perf > ETF (combo migliore)
+        tag = None
+        if r['peRelative'] is not None and r.get('perfVsEtf') is not None:
+            if r['peRelative'] > 1.15 and r['perfVsEtf'] > 0:
+                tag = 'premium_ok'
+            elif r['peRelative'] > 1.15 and r['perfVsEtf'] <= 0:
+                tag = 'premium_no'
+            elif r['peRelative'] < 0.85 and r['perfVsEtf'] > 0:
+                tag = 'value_momentum'
+        r['tag'] = tag
+    
+    # Ordina: prima per P/E relativo crescente (più convenienti), poi market cap
     def sort_key(r):
         pe_rel = r.get('peRelative') if r.get('peRelative') is not None else 999
         mcap = -(r.get('marketCapB') or 0)
@@ -492,7 +655,9 @@ def compute_holdings_for_sector(sector_ticker, holdings_list):
 
 
 def compute_all_holdings(metrics_list, holdings_dict, max_sectors=None):
-    """Per i settori IN TESTA o IN RIPRESA, calcola holdings con P/E."""
+    """Per i settori IN TESTA o IN RIPRESA, calcola holdings con P/E.
+    Sfrutta i signal_info già calcolati nei metrics per dare anche
+    performance dal segnale e performance vs ETF settore."""
     if max_sectors is None:
         target_sectors = [m for m in metrics_list if m.get('state') in ('In testa', 'In ripresa')]
     else:
@@ -503,11 +668,19 @@ def compute_all_holdings(metrics_list, holdings_dict, max_sectors=None):
     for m in target_sectors:
         ticker = m.get('ticker_raw') or m.get('ticker')
         if ticker in holdings_dict:
-            holdings = compute_holdings_for_sector(ticker, holdings_dict[ticker])
+            signal = m.get('signal') or {}
+            holdings = compute_holdings_for_sector(
+                ticker,
+                holdings_dict[ticker],
+                signal_date=signal.get('signalDate'),
+                etf_perf_from_signal=signal.get('perfFromSignal')
+            )
             if holdings:
                 out[m.get('ticker')] = {
                     'sector_name': m.get('name'),
                     'sector_state': m.get('state'),
+                    'signal_date': signal.get('signalDate'),
+                    'etf_perf_from_signal': signal.get('perfFromSignal'),
                     'holdings': holdings,
                 }
     return out
