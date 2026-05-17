@@ -266,12 +266,12 @@ def classify_quadrant(rs, mom):
 
 def find_signal_dates(rrg_df, current_state):
     """
-    Per i settori in stato attivo (testa/ripresa), trova:
-    - state_entry_date: quando è iniziato lo stato attuale (croci degli assi)
-    - signal_date: quando è stato dato il PRIMO segnale (entrata in ripresa)
+    Trova le date di ingresso nello stato attuale per tutti e 4 gli stati.
     
-    Per Emergente: signal_date == state_entry_date
-    Per Leader: signal_date può essere precedente (quando era Emergente)
+    Leader: ultima volta che RS >= 100 (e mom era già >= 100)
+    Emergente: ultima volta che momentum >= 100 (con RS ancora < 100)
+    In rallentamento: ultima volta che momentum < 100 (con RS ancora >= 100)
+    Debole: ultima volta che RS < 100 (con mom ancora < 100)
     """
     if rrg_df is None or len(rrg_df) < 5:
         return None
@@ -291,12 +291,11 @@ def find_signal_dates(rrg_df, current_state):
                 entry_idx = i
                 break
         if entry_idx is None and rs[0] >= 100:
-            entry_idx = 0  # già sopra 100 dall'inizio del periodo
+            entry_idx = 0
         
         if entry_idx is not None:
             result['state_entry_date'] = dates[entry_idx].strftime('%Y-%m-%d')
-            
-            # signal: cercando all'indietro da entry_idx, quando momentum è passato da <100 a >=100
+            # signal: quando momentum è passato da <100 a >=100 (entrata in Emergente)
             signal_idx = entry_idx
             for i in range(entry_idx, 0, -1):
                 if mom[i] >= 100 and mom[i-1] < 100:
@@ -309,6 +308,34 @@ def find_signal_dates(rrg_df, current_state):
         entry_idx = None
         for i in range(n - 1, 0, -1):
             if mom[i] >= 100 and mom[i-1] < 100:
+                entry_idx = i
+                break
+        if entry_idx is not None:
+            result['state_entry_date'] = dates[entry_idx].strftime('%Y-%m-%d')
+            result['signal_date'] = result['state_entry_date']
+    
+    elif current_state == 'In rallentamento':
+        # entry: ultima volta che momentum è passato da >=100 a <100 (era Leader, ora rallenta)
+        entry_idx = None
+        for i in range(n - 1, 0, -1):
+            if mom[i] < 100 and mom[i-1] >= 100:
+                entry_idx = i
+                break
+        if entry_idx is not None:
+            result['state_entry_date'] = dates[entry_idx].strftime('%Y-%m-%d')
+            result['signal_date'] = result['state_entry_date']
+    
+    elif current_state == 'Debole':
+        # entry: ultima volta che RS è passato da >=100 a <100 (entrata nella debolezza)
+        # OPPURE momentum è passato da >=100 a <100 (caduto da Emergente)
+        entry_idx = None
+        for i in range(n - 1, 0, -1):
+            # Caduto da Leader o In rallentamento (RS è sceso sotto 100)
+            if rs[i] < 100 and rs[i-1] >= 100:
+                entry_idx = i
+                break
+            # Oppure caduto da Emergente (momentum è sceso sotto 100, mentre RS era già < 100)
+            if mom[i] < 100 and mom[i-1] >= 100 and rs[i] < 100:
                 entry_idx = i
                 break
         if entry_idx is not None:
@@ -425,9 +452,9 @@ def compute_sector_metrics(prices_df, bench_ticker, sector_dict):
             for d, v in weeks_26.items()
         ]
         
-        # Storico segnali · solo per stati attivi (testa/ripresa)
+        # Storico segnali · per TUTTI gli stati (così possiamo testare anche i Debole)
         signal_info = None
-        if quadrant in ('Leader', 'Emergente'):
+        if quadrant in ('Leader', 'Emergente', 'In rallentamento', 'Debole'):
             sig = find_signal_dates(rrg, quadrant)
             if sig:
                 last_data_date = sym_prices.index[-1]
