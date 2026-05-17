@@ -740,6 +740,218 @@ def compute_all_holdings(metrics_list, holdings_dict, max_sectors=None):
 
 
 
+# ============================================================
+# PORTFOLIO MODEL · Generazione automatica di allocazione modello
+# ============================================================
+def build_portfolio_model(us_metrics, eu_metrics, us_holdings, eu_holdings):
+    """
+    Costruisce allocazione modello su 3 profili (prudente/bilanciato/aggressivo).
+    """
+    
+    def is_valid(sector):
+        state = sector.get('state')
+        stage = sector.get('stage', '')
+        phase_num = None
+        for c in stage:
+            if c.isdigit():
+                phase_num = int(c)
+                break
+        if state not in ('Leader', 'Emergente'):
+            return False
+        if phase_num is None or phase_num not in (1, 2):
+            return False
+        return True
+    
+    def calc_score(sector):
+        state = sector.get('state')
+        signal = sector.get('signal') or {}
+        weeks = signal.get('weeksFromState') or 0
+        rel_perf = signal.get('relFromState') or 0
+        rs_ratio = sector.get('rsRatio') or 100
+        stage = sector.get('stage', '')
+        
+        score = 0
+        if state == 'Leader': score += 60
+        elif state == 'Emergente': score += 40
+        
+        rs_excess = max(0, rs_ratio - 100)
+        score += min(20, rs_excess * 2)
+        score += min(15, max(0, rel_perf * 0.5))
+        
+        if state == 'Leader':
+            if weeks > 40: score -= 10
+            elif 5 <= weeks <= 25: score += 5
+        elif state == 'Emergente':
+            if weeks < 3: score -= 5
+            elif weeks >= 5: score += 3
+        
+        if '2' in stage: score += 5
+        return round(max(0, score), 1)
+    
+    all_sectors = []
+    for s in us_metrics:
+        if is_valid(s):
+            all_sectors.append({**s, 'region': 'USA', 'score': calc_score(s)})
+    for s in eu_metrics:
+        if is_valid(s):
+            all_sectors.append({**s, 'region': 'EU', 'score': calc_score(s)})
+    
+    all_sectors.sort(key=lambda x: x['score'], reverse=True)
+    
+    if not all_sectors:
+        return {
+            'comment': 'Nessun settore operativamente valido. Il sistema non rileva al momento Leader o Emergenti in fase coerente. Mantenere prevalenza di liquidità in attesa di nuovi segnali.',
+            'profiles': {},
+            'excluded_summary': [],
+        }
+    
+    PROFILES = {
+        'prudente':   {'equity_pct': 30, 'n_sectors': 3, 'max_per_sector': 12},
+        'bilanciato': {'equity_pct': 50, 'n_sectors': 5, 'max_per_sector': 12},
+        'aggressivo': {'equity_pct': 80, 'n_sectors': 7, 'max_per_sector': 16},
+    }
+    
+    def get_top_picks(region, sector_ticker, n=3):
+        holdings_dict = us_holdings if region == 'USA' else eu_holdings
+        info = holdings_dict.get(sector_ticker)
+        if not info or not info.get('holdings'):
+            return []
+        rows = info['holdings']
+        filtered = [r for r in rows if r.get('tag') != 'value_trap']
+        return filtered[:n]
+    
+    profiles_out = {}
+    for profile_name, cfg in PROFILES.items():
+        selected = all_sectors[:cfg['n_sectors']]
+        if not selected:
+            continue
+        
+        total_score = sum(s['score'] for s in selected)
+        equity_pct = cfg['equity_pct']
+        max_pct = cfg['max_per_sector']
+        
+        allocations = []
+        residual = 0
+        for s in selected:
+            proportion = s['score'] / total_score if total_score > 0 else 1.0 / len(selected)
+            weight = proportion * equity_pct
+            if weight > max_pct:
+                residual += weight - max_pct
+                weight = max_pct
+            allocations.append({'sector': s, 'weight': weight})
+        
+        guard = 0
+        while residual > 0.1 and guard < 10:
+            redistributable = [a for a in allocations if a['weight'] < max_pct - 0.01]
+            if not redistributable:
+                break
+            extra = residual / len(redistributable)
+            residual = 0
+            for a in redistributable:
+                room = max_pct - a['weight']
+                add = min(extra, room)
+                a['weight'] += add
+                residual += extra - add
+            guard += 1
+        
+        cash_pct = 100 - equity_pct
+        
+        profile_items = []
+        for a in allocations:
+            s = a['sector']
+            ticker_raw = s.get('ticker_raw') or s.get('ticker')
+            picks_us = get_top_picks('USA', ticker_raw, 3) if s['region'] == 'USA' else []
+            picks_it = get_top_picks('EU', ticker_raw, 3) if s['region'] == 'EU' else []
+            signal = s.get('signal') or {}
+            
+            profile_items.append({
+                'sector_name': s['name'],
+                'sector_ticker': s['ticker'],
+                'region': s['region'],
+                'state': s['state'],
+                'stage': s.get('stage', ''),
+                'weight_pct': round(a['weight'], 1),
+                'score': s['score'],
+                'weeks_from_state': signal.get('weeksFromState'),
+                'perf_from_state': signal.get('perfFromState'),
+                'rel_from_state': signal.get('relFromState'),
+                'picks_us': [{'ticker': p['ticker'], 'name': p['name'], 'perf_3m': p.get('roc13w'), 'pe_rel': p.get('peRelative'), 'tag': p.get('tag')} for p in picks_us],
+                'picks_it': [{'ticker': p['ticker'], 'name': p['name'], 'perf_3m': p.get('roc13w'), 'pe_rel': p.get('peRelative'), 'tag': p.get('tag')} for p in picks_it],
+            })
+        
+        profiles_out[profile_name] = {
+            'equity_pct': equity_pct,
+            'cash_pct': cash_pct,
+            'allocations': profile_items,
+        }
+    
+    # Genera commento di scenario
+    n_leaders = sum(1 for s in all_sectors if s['state'] == 'Leader')
+    n_emerging = sum(1 for s in all_sectors if s['state'] == 'Emergente')
+    
+    sector_themes = {}
+    for s in all_sectors[:7]:
+        name = s['name'].lower()
+        theme = None
+        if 'energia' in name: theme = 'Energia'
+        elif 'tecnologia' in name or 'semicon' in name: theme = 'Tecnologia'
+        elif 'banc' in name or 'finanz' in name: theme = 'Finanziari'
+        elif 'sanit' in name or 'biotech' in name: theme = 'Sanità'
+        elif 'consum' in name or 'retail' in name or 'aliment' in name: theme = 'Consumi'
+        elif 'industri' in name: theme = 'Industriali'
+        elif 'telecom' in name or 'comunic' in name: theme = 'Comunicazioni'
+        elif 'utility' in name: theme = 'Utility'
+        elif 'immobili' in name: theme = 'Immobiliare'
+        elif 'materiali' in name or 'risorse' in name or 'chimica' in name: theme = 'Materiali'
+        elif 'assicur' in name: theme = 'Assicurazioni'
+        elif 'personal' in name or 'lusso' in name: theme = 'Lusso'
+        if theme:
+            sector_themes.setdefault(theme, []).append(s)
+    
+    top_theme = max(sector_themes.items(), key=lambda x: len(x[1]))[0] if sector_themes else None
+    
+    excluded = []
+    for s in (us_metrics + eu_metrics):
+        if s.get('state') in ('Debole', 'In rallentamento'):
+            signal = s.get('signal') or {}
+            rel = signal.get('relFromState')
+            if rel is not None and rel < -8:
+                excluded.append({
+                    'ticker': s.get('ticker'),
+                    'name': s.get('name'),
+                    'state': s.get('state'),
+                    'rel_perf': rel,
+                })
+    excluded.sort(key=lambda x: x['rel_perf'])
+    excluded_top5 = excluded[:5]
+    
+    parts = []
+    parts.append(f"📊 Quadro attuale: {n_leaders} settori Leader confermati e {n_emerging} Emergenti operativamente validi.")
+    if top_theme:
+        parts.append(f"Tema centrale: {top_theme}.")
+    
+    mature_leaders = [s for s in all_sectors if s['state'] == 'Leader' and (s.get('signal') or {}).get('weeksFromState', 0) > 40]
+    if mature_leaders:
+        names = ', '.join(s['ticker'] for s in mature_leaders)
+        wk = mature_leaders[0].get('signal', {}).get('weeksFromState')
+        parts.append(f"⚠️ Leader maturo: {names} ({wk} settimane di leadership) — peso ridotto nel modello per rischio di top.")
+    
+    fresh_emerging = [s for s in all_sectors if s['state'] == 'Emergente' and (s.get('signal') or {}).get('weeksFromState', 0) < 5]
+    if fresh_emerging:
+        names = ', '.join(s['ticker'] for s in fresh_emerging)
+        parts.append(f"🆕 Emergenti freschi (da monitorare nelle prossime settimane): {names}.")
+    
+    if excluded_top5:
+        names = ', '.join(f"{e['ticker']} ({e['rel_perf']:+.1f}%)" for e in excluded_top5[:3])
+        parts.append(f"❌ Settori esclusi per alpha negativa significativa: {names}.")
+    
+    return {
+        'comment': ' '.join(parts),
+        'profiles': profiles_out,
+        'excluded_summary': excluded_top5,
+    }
+
+
 def main():
     print("Sector Rotation · Data Update")
     print("=" * 60)
@@ -784,6 +996,11 @@ def main():
     eu_holdings = compute_all_holdings(eu_metrics, EU_HOLDINGS)
     print(f"  {len(eu_holdings)} settori EU/Italia elaborati")
     
+    # Costruisce il portafoglio modello automatico
+    print("\nCostruzione portafoglio modello...")
+    portfolio = build_portfolio_model(us_metrics, eu_metrics, us_holdings, eu_holdings)
+    print(f"  Profili generati: {list(portfolio['profiles'].keys())}")
+    
     # Date più recente nei dati
     last_data_date = prices.index[-1].strftime('%Y-%m-%d')
     
@@ -806,6 +1023,7 @@ def main():
             'holdings': eu_holdings,
         },
         'cross': cross_rows,
+        'portfolio': portfolio,
     }
     
     out_path = Path(__file__).parent.parent / 'data' / 'sector_data.json'
