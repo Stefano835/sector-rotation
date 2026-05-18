@@ -779,13 +779,13 @@
     <div class="panel has-accent">
       <div class="panel-header">
         <div class="panel-title">
-          <span class="subtitle">Quadro mercati USA + Europa</span>
-          <h2>📊 Tutti i settori con la performance dal cambio di stato</h2>
+          <span class="subtitle">Classifica di forza · USA + Europa</span>
+          <h2>📊 Ranking settori dal più forte al più debole</h2>
         </div>
       </div>
       <p style="color:var(--text-secondary);margin-bottom:20px;font-size:13px;line-height:1.6;">
-        Per ogni ETF settoriale, da quando è entrato nello stato attuale e quanto avresti guadagnato (o perso) seguendo il segnale.
-        <b style="color:var(--accent-lead);">Test del sistema</b>: i Leader dovrebbero salire, i Debole dovrebbero scendere dal cambio stato.
+        Punteggio calcolato da: stato (Leader/Emergente/In rallentamento/Debole) + forza relativa + alpha vs benchmark + maturità del segnale.
+        La colonna <b>Δ</b> mostra il cambio di posizione rispetto a circa 7 giorni fa: <span style="color:var(--accent-lead);">▲</span> salito, <span style="color:var(--accent-lag);">▼</span> sceso, ▬ invariato, — nuovo.
       </p>
       <table class="sector-table" id="table-quadro"></table>
     </div>
@@ -1595,35 +1595,48 @@ window.switchPicksTab = function(region, btn) {
 };
 
 function renderQuadro(tableId) {
-  // Combina USA + EU in un'unica lista, solo settori con segnale
-  const allRows = [];
+  // Usa la classifica pre-calcolata in DATA.ranking se disponibile, altrimenti fallback al vecchio metodo
+  let allRows = [];
   
-  if (DATA.us && DATA.us.sectors) {
-    DATA.us.sectors.forEach(s => {
-      if (s.signal && s.signal.stateEntryDate) {
-        allRows.push({...s, region: 'USA', benchName: 'S&P 500'});
-      }
+  if (DATA.ranking && DATA.ranking.ranking && DATA.ranking.ranking.length > 0) {
+    // Usa la classifica con punteggio dal Python
+    allRows = DATA.ranking.ranking.map(r => {
+      // Recupera info aggiuntive dal settore originale (fase, ecc.)
+      const original = (DATA.us && DATA.us.sectors.find(s => s.ticker === r.ticker))
+                    || (DATA.eu && DATA.eu.sectors.find(s => s.ticker === r.ticker));
+      return {
+        ...r,
+        stage: original ? original.stage : '—',
+      };
     });
-  }
-  if (DATA.eu && DATA.eu.sectors) {
-    DATA.eu.sectors.forEach(s => {
-      if (s.signal && s.signal.stateEntryDate) {
-        allRows.push({...s, region: 'Europa', benchName: 'STOXX 600'});
-      }
+  } else {
+    // Fallback al vecchio metodo (compat)
+    if (DATA.us && DATA.us.sectors) {
+      DATA.us.sectors.forEach(s => {
+        if (s.signal && s.signal.stateEntryDate) {
+          allRows.push({...s, region: 'USA'});
+        }
+      });
+    }
+    if (DATA.eu && DATA.eu.sectors) {
+      DATA.eu.sectors.forEach(s => {
+        if (s.signal && s.signal.stateEntryDate) {
+          allRows.push({...s, region: 'EU'});
+        }
+      });
+    }
+    allRows.sort((a, b) => {
+      const pa = a.signal && a.signal.perfFromState ? a.signal.perfFromState : -9999;
+      const pb = b.signal && b.signal.perfFromState ? b.signal.perfFromState : -9999;
+      return pb - pa;
     });
+    allRows.forEach((s, i) => s.rank = i + 1);
   }
 
   if (allRows.length === 0) {
-    document.getElementById(tableId).innerHTML = '<tbody><tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:30px;">Nessun segnale ancora elaborato. Lancia il workflow Update Sector Data.</td></tr></tbody>';
+    document.getElementById(tableId).innerHTML = '<tbody><tr><td colspan="11" style="text-align:center;color:var(--text-muted);padding:30px;">Nessun dato disponibile. Lancia il workflow Update Sector Data.</td></tr></tbody>';
     return;
   }
-
-  // Ordina per perfFromState decrescente (i migliori in alto, i peggiori in fondo)
-  allRows.sort((a, b) => {
-    const pa = a.signal.perfFromState ?? -9999;
-    const pb = b.signal.perfFromState ?? -9999;
-    return pb - pa;
-  });
 
   const fmtDate = d => {
     if (!d) return '—';
@@ -1637,40 +1650,65 @@ function renderQuadro(tableId) {
     return `<span class="change ${cls}">${sign}${v.toFixed(1)}%</span>`;
   };
   const fmtWeeks = w => w === null || w === undefined ? '—' : `${w} sett.`;
+  
+  // Renderizza il delta vs settimana precedente
+  const renderDelta = (s) => {
+    if (s.rank_direction === 'new' || s.rank_change === null || s.rank_change === undefined) {
+      return '<span style="color:var(--text-muted);font-size:10px;font-family:var(--mono);">—</span>';
+    }
+    if (s.rank_direction === 'flat') {
+      return '<span style="color:var(--text-muted);font-family:var(--mono);font-size:11px;">▬</span>';
+    }
+    if (s.rank_direction === 'up') {
+      return `<span style="color:var(--accent-lead);font-family:var(--mono);font-size:11px;font-weight:600;">▲${s.rank_change}</span>`;
+    }
+    if (s.rank_direction === 'down') {
+      return `<span style="color:var(--accent-lag);font-family:var(--mono);font-size:11px;font-weight:600;">▼${s.rank_change}</span>`;
+    }
+    return '—';
+  };
+  
+  const prevDate = DATA.ranking && DATA.ranking.prev_snapshot_date
+    ? new Date(DATA.ranking.prev_snapshot_date).toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit'})
+    : null;
+  const deltaHeader = prevDate ? `vs ${prevDate}` : 'vs prec.';
 
   let html = `
     <thead>
       <tr>
         <th>#</th>
+        <th>Δ</th>
         <th>Codice</th>
         <th>Settore</th>
-        <th>Regione</th>
+        <th>Reg.</th>
         <th>Stato</th>
         <th>Fase</th>
-        <th>Dal</th>
-        <th>Da</th>
-        <th class="num">Perf dal segnale</th>
-        <th class="num">vs Benchmark</th>
+        <th class="num">Punteggio</th>
+        <th class="num">Perf segnale</th>
+        <th class="num">vs Bench</th>
       </tr>
     </thead>
     <tbody>
   `;
 
-  allRows.forEach((s, i) => {
-    const sig = s.signal;
+  allRows.forEach((s) => {
     const stage = s.stage || '—';
     const flagEmoji = s.region === 'USA' ? '🇺🇸' : '🇪🇺';
+    const sig = s.signal || {};
+    
+    // Highlight prima riga (numero 1) con sfondo dorato sottile
+    const rowStyle = s.rank === 1 ? 'background:rgba(245,158,11,0.04);' : '';
     
     html += `
-      <tr>
-        <td style="color:var(--text-muted);">${String(i+1).padStart(2,'0')}</td>
+      <tr style="${rowStyle}">
+        <td><b style="color:var(--text-primary);">${String(s.rank).padStart(2,'0')}</b></td>
+        <td>${renderDelta(s)}</td>
         <td><span class="ticker">${s.ticker}</span></td>
         <td><span class="sector-name">${s.name}</span></td>
-        <td style="color:var(--text-secondary);font-size:11px;">${flagEmoji} ${s.region}</td>
+        <td style="color:var(--text-secondary);font-size:11px;">${flagEmoji}</td>
         <td><span class="state-badge state-${s.state.replace(/ /g,'_')}">${s.state}</span></td>
         <td><span class="stage-badge stage-${stage.replace(/[^0-9]/g,'')}">${stage}</span></td>
-        <td style="font-family:var(--mono);font-size:11px;">${fmtDate(sig.stateEntryDate)}</td>
-        <td style="color:var(--text-secondary);font-size:11px;">${fmtWeeks(sig.weeksFromState)}</td>
+        <td class="num"><b style="color:var(--accent-gold);">${s.score !== undefined ? s.score.toFixed(0) : '—'}</b></td>
         <td class="num">${fmtSign(sig.perfFromState)}</td>
         <td class="num">${fmtSign(sig.relFromState)}</td>
       </tr>
