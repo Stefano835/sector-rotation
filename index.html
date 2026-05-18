@@ -1550,6 +1550,9 @@ function renderPortfolio(portfolio) {
   
   html += '</div>';
   
+  // Chiudo il grid dei profili prima di aggiungere la sezione titoli operativi
+  html += '</div>';
+  
   // Sezione titoli operativi · selettore profilo + regione
   const hasAnyProfile = Object.values(portfolio.profiles).some(p => p && p.allocations && p.allocations.length > 0);
   if (hasAnyProfile) {
@@ -1583,7 +1586,6 @@ function renderPortfolio(portfolio) {
     `;
   }
   
-  html += '</div>';
   container.innerHTML = html;
   
   // Stato corrente delle picks (profilo + regione)
