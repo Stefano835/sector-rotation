@@ -1424,16 +1424,15 @@ window.renderPicksFor = function(region, allocations) {
     
     if (!sectorValid) {
       return {
-        level: 'FUORI',
+        level: 'SEGNALE NEGATIVO',
         emoji: '🔴',
         color: 'var(--accent-lag)',
         reason: `Settore ${item.state} — uscire`,
       };
     }
-    // Settore valido. Guardo il titolo:
     if (positiveTags.includes(tag)) {
       return {
-        level: 'DENTRO',
+        level: 'SEGNALE OK',
         emoji: '🟢',
         color: 'var(--accent-lead)',
         reason: 'Settore + titolo OK',
@@ -1441,7 +1440,7 @@ window.renderPicksFor = function(region, allocations) {
     }
     if (neutralTags.includes(tag)) {
       return {
-        level: 'MONITORA',
+        level: 'SEGNALE DEBOLE',
         emoji: '🟡',
         color: 'var(--accent-improve)',
         reason: 'Titolo Stagnante · stop loss stretto',
@@ -1449,15 +1448,14 @@ window.renderPicksFor = function(region, allocations) {
     }
     if (negativeTags.includes(tag)) {
       return {
-        level: 'FUORI',
+        level: 'SEGNALE NEGATIVO',
         emoji: '🔴',
         color: 'var(--accent-lag)',
         reason: `Titolo ${tagLabels[tag] || tag} — vendere`,
       };
     }
-    // Tag null o sconosciuto = neutrale, monitora
     return {
-      level: 'MONITORA',
+      level: 'SEGNALE DEBOLE',
       emoji: '🟡',
       color: 'var(--accent-improve)',
       reason: 'Nessun tag positivo, valutare',
@@ -1570,13 +1568,13 @@ window.renderPicksFor = function(region, allocations) {
         </div>
         <div style="flex:1;min-width:280px;">
           <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.16em;color:var(--text-muted);margin-bottom:8px;">PALLINO IN COLONNA "STATO OPERATIVO"</div>
-          <div style="margin-bottom:4px;"><b style="color:var(--accent-lead);">🟢 DENTRO</b> <span style="color:var(--text-secondary);">· settore e titolo OK · mantieni o compra</span></div>
-          <div style="margin-bottom:4px;"><b style="color:var(--accent-improve);">🟡 MONITORA</b> <span style="color:var(--text-secondary);">· settore OK ma titolo Stagnante · stop loss stretto</span></div>
-          <div><b style="color:var(--accent-lag);">🔴 FUORI</b> <span style="color:var(--text-secondary);">· settore o titolo non più validi · vendere</span></div>
+          <div style="margin-bottom:4px;"><b style="color:var(--accent-lead);">🟢 SEGNALE OK</b> <span style="color:var(--text-secondary);">· settore e titolo OK · mantieni o compra</span></div>
+          <div style="margin-bottom:4px;"><b style="color:var(--accent-improve);">🟡 SEGNALE DEBOLE</b> <span style="color:var(--text-secondary);">· settore OK ma titolo Stagnante · stop loss stretto</span></div>
+          <div><b style="color:var(--accent-lag);">🔴 SEGNALE NEGATIVO</b> <span style="color:var(--text-secondary);">· settore o titolo non più validi · vendere</span></div>
         </div>
       </div>
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);color:var(--text-muted);font-size:10px;font-style:normal;">
-        I due indicatori sono <b>complementari</b>: il P/E dice <i>quanto paghi</i>, lo Stato operativo dice <i>se vale la pena pagarlo</i>. Un titolo 🟠 caro + 🟢 DENTRO è un premium giustificato dalla performance.
+        I due indicatori sono <b>complementari</b>: il P/E dice <i>quanto paghi</i>, lo Stato operativo dice <i>se vale la pena pagarlo</i>. Un titolo 🟠 caro + 🟢 SEGNALE OK è un premium giustificato dalla performance.
       </div>
     </div>
   `;
@@ -1764,13 +1762,13 @@ async function loadData() {
     let freshClass, freshSub;
     if (hoursDiff < 36) {
       freshClass = 'fresh';
-      freshSub = '🟢 Dati freschi';
+      freshSub = '🟢 Aggiornato';
     } else if (hoursDiff < 96) {
       freshClass = 'aging';
-      freshSub = '🟡 Dati di qualche giorno fa';
+      freshSub = '🟡 Aggiornamento da verificare';
     } else {
       freshClass = 'stale';
-      freshSub = '🔴 Dati vecchi · controlla che il workflow giri';
+      freshSub = '🔴 Non aggiornato · controlla il workflow';
     }
     
     // Formatto data leggibile in italiano
