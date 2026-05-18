@@ -13,6 +13,7 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 import sys
@@ -953,6 +954,169 @@ def build_portfolio_model(us_metrics, eu_metrics, us_holdings, eu_holdings):
     }
 
 
+# ============================================================
+# RANKING SETTORI · classifica forza con confronto settimana precedente
+# ============================================================
+def compute_sector_ranking(us_metrics, eu_metrics, history_path='data/ranking_history.json'):
+    """
+    Costruisce la classifica globale (USA + EU) ordinata per forza,
+    e confronta con lo snapshot di 7 giorni fa.
+    
+    Punteggio di forza basato su:
+    - Stato del settore (Leader=100, Emergente=70, In rallentamento=40, Debole=10)
+    - Forza relativa attuale (rsRatio - 100, scaling)
+    - Performance dal segnale vs benchmark (alpha)
+    - Settimane nello stato (penalità per Leader maturi)
+    """
+    
+    def score_sector(s):
+        state = s.get('state')
+        signal = s.get('signal') or {}
+        rs_ratio = s.get('rsRatio') or 100
+        rel_perf = signal.get('relFromState') or 0
+        weeks = signal.get('weeksFromState') or 0
+        stage = s.get('stage', '')
+        
+        # Punteggio base in funzione dello stato
+        if state == 'Leader':
+            base = 100
+        elif state == 'Emergente':
+            base = 70
+        elif state == 'In rallentamento':
+            base = 40
+        elif state == 'Debole':
+            base = 10
+        else:
+            base = 50
+        
+        # Componente forza relativa (rs_ratio centrato a 100)
+        rs_component = (rs_ratio - 100) * 2  # ogni punto sopra 100 vale 2
+        
+        # Componente alpha vs benchmark (puoi guadagnare/perdere fino a +/- 30)
+        alpha_component = max(-30, min(30, rel_perf * 0.5))
+        
+        # Penalità per Leader maturo (rischio top)
+        maturity_penalty = 0
+        if state == 'Leader' and weeks > 40:
+            maturity_penalty = -10
+        elif state == 'Leader' and weeks > 60:
+            maturity_penalty = -20
+        
+        # Bonus Fase 2 (trend rialzista confermato)
+        phase_bonus = 0
+        if '2' in stage:
+            phase_bonus = 5
+        elif '4' in stage:
+            phase_bonus = -5
+        
+        total = base + rs_component + alpha_component + maturity_penalty + phase_bonus
+        return round(total, 1)
+    
+    # Combina USA + EU
+    all_sectors = []
+    for s in us_metrics:
+        all_sectors.append({
+            'ticker': s.get('ticker'),
+            'name': s.get('name'),
+            'region': 'USA',
+            'state': s.get('state'),
+            'stage': s.get('stage'),
+            'rsRatio': s.get('rsRatio'),
+            'rsMom': s.get('rsMom'),
+            'signal': s.get('signal'),
+            'score': score_sector(s),
+        })
+    for s in eu_metrics:
+        all_sectors.append({
+            'ticker': s.get('ticker'),
+            'name': s.get('name'),
+            'region': 'EU',
+            'state': s.get('state'),
+            'stage': s.get('stage'),
+            'rsRatio': s.get('rsRatio'),
+            'rsMom': s.get('rsMom'),
+            'signal': s.get('signal'),
+            'score': score_sector(s),
+        })
+    
+    # Ordina per punteggio decrescente
+    all_sectors.sort(key=lambda x: x['score'], reverse=True)
+    
+    # Assegna posizione corrente
+    for i, s in enumerate(all_sectors):
+        s['rank'] = i + 1
+    
+    # Carica storico precedente (se esiste)
+    prev_ranks = {}
+    prev_date = None
+    history = []
+    try:
+        if os.path.exists(history_path):
+            with open(history_path, 'r') as f:
+                history = json.load(f)
+    except Exception as e:
+        print(f"  Storico ranking non disponibile: {e}", file=sys.stderr)
+        history = []
+    
+    # Trova snapshot 5-9 giorni fa (per confronto "settimana precedente")
+    today = datetime.now(timezone.utc).date()
+    for snap in reversed(history):
+        try:
+            snap_date = datetime.fromisoformat(snap['date']).date()
+            days_diff = (today - snap_date).days
+            if 5 <= days_diff <= 9:
+                prev_ranks = {r['ticker']: r['rank'] for r in snap.get('ranks', [])}
+                prev_date = snap['date']
+                break
+        except Exception:
+            continue
+    
+    # Aggiungi delta vs settimana precedente
+    for s in all_sectors:
+        prev = prev_ranks.get(s['ticker'])
+        if prev is not None:
+            delta = prev - s['rank']  # positivo = salito in classifica
+            if delta > 0:
+                s['rank_change'] = delta  # numero di posizioni guadagnate
+                s['rank_direction'] = 'up'
+            elif delta < 0:
+                s['rank_change'] = abs(delta)
+                s['rank_direction'] = 'down'
+            else:
+                s['rank_change'] = 0
+                s['rank_direction'] = 'flat'
+            s['prev_rank'] = prev
+        else:
+            s['rank_change'] = None
+            s['rank_direction'] = 'new'
+            s['prev_rank'] = None
+    
+    # Salva snapshot odierno (mantenendo storico di 30 giorni)
+    today_snapshot = {
+        'date': datetime.now(timezone.utc).isoformat(),
+        'ranks': [{'ticker': s['ticker'], 'rank': s['rank'], 'score': s['score']} for s in all_sectors],
+    }
+    # Rimuovi snapshot precedente dello stesso giorno
+    history = [h for h in history if not h.get('date', '').startswith(today.isoformat())]
+    history.append(today_snapshot)
+    # Mantieni solo ultimi 35 giorni
+    if len(history) > 35:
+        history = history[-35:]
+    
+    try:
+        os.makedirs(os.path.dirname(history_path), exist_ok=True)
+        with open(history_path, 'w') as f:
+            json.dump(history, f, indent=2)
+        print(f"  Snapshot salvato in {history_path}")
+    except Exception as e:
+        print(f"  Errore salvataggio storico: {e}", file=sys.stderr)
+    
+    return {
+        'ranking': all_sectors,
+        'prev_snapshot_date': prev_date,
+    }
+
+
 def main():
     print("Sector Rotation · Data Update")
     print("=" * 60)
@@ -997,6 +1161,13 @@ def main():
     eu_holdings = compute_all_holdings(eu_metrics, EU_HOLDINGS)
     print(f"  {len(eu_holdings)} settori EU/Italia elaborati")
     
+    # Costruisce la classifica di forza con confronto settimana precedente
+    print("\nCostruzione classifica di forza...")
+    ranking_data = compute_sector_ranking(us_metrics, eu_metrics)
+    print(f"  {len(ranking_data['ranking'])} settori classificati")
+    if ranking_data.get('prev_snapshot_date'):
+        print(f"  Confronto con snapshot del {ranking_data['prev_snapshot_date'][:10]}")
+    
     # Costruisce il portafoglio modello automatico
     print("\nCostruzione portafoglio modello...")
     portfolio = build_portfolio_model(us_metrics, eu_metrics, us_holdings, eu_holdings)
@@ -1025,6 +1196,7 @@ def main():
         },
         'cross': cross_rows,
         'portfolio': portfolio,
+        'ranking': ranking_data,
     }
     
     out_path = Path(__file__).parent.parent / 'data' / 'sector_data.json'
