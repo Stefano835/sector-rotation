@@ -856,6 +856,143 @@
     .kpi-row { grid-template-columns: repeat(2, 1fr); }
     h1 { font-size: 38px; }
   }
+  
+  /* ============================================
+     MOBILE — smartphone (max 640px)
+     ============================================ */
+  @media (max-width: 640px) {
+    .container {
+      padding: 12px;
+    }
+    
+    /* Header */
+    header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .brand-row { gap: 12px; }
+    .brand-logo { height: 48px; width: 48px; }
+    h1 {
+      font-size: 32px;
+      padding: 4px 0 8px;
+      line-height: 1.25;
+    }
+    h1 .title-separator {
+      height: 26px;
+      margin: 0 14px;
+    }
+    h1 .title-separator::before {
+      width: 5px;
+      height: 5px;
+    }
+    .brand-mark {
+      font-size: 9px;
+    }
+    .header-controls {
+      width: 100%;
+      align-items: flex-start;
+    }
+    .freshness-badge {
+      width: 100%;
+    }
+    
+    /* Tab buttons */
+    .tab-btn {
+      padding: 10px 14px;
+      font-size: 11px;
+    }
+    
+    /* Panel */
+    .panel {
+      padding: 16px 12px;
+    }
+    .panel h2 {
+      font-size: 18px;
+    }
+    .panel .subtitle {
+      font-size: 10px;
+    }
+    
+    /* Portfolio cards — stack vertically */
+    .portfolio-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px;
+    }
+    .profile-card {
+      padding: 12px;
+    }
+    
+    /* Tabelle: scroll orizzontale + font ridotto */
+    .panel { overflow-x: auto; }
+    table.sector-table,
+    table.portfolio-table {
+      font-size: 10px;
+      min-width: 100%;
+    }
+    table.sector-table th,
+    table.sector-table td {
+      padding: 6px 4px;
+    }
+    .state-badge, .stage-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+    }
+    
+    /* Quadro: forziamo larghezza minima per scroll horizontal */
+    #table-quadro {
+      min-width: 760px;
+    }
+    
+    /* Picks: stessa cosa */
+    #picks-content table {
+      min-width: 600px;
+    }
+    
+    /* Wrapper scroll x con hint visivo */
+    .panel::-webkit-scrollbar { height: 6px; }
+    .panel::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    
+    /* Legenda picks: stack */
+    #picks-content > div:first-child > div {
+      flex-direction: column !important;
+      gap: 16px !important;
+    }
+    
+    /* Help panel */
+    .help-header {
+      flex-direction: column;
+    }
+    .manual-download {
+      margin: 8px;
+      justify-content: center;
+    }
+    
+    /* Legal */
+    .legal-section {
+      padding: 18px 14px;
+    }
+    .legal-block p {
+      font-size: 11px;
+    }
+    
+    /* Footer */
+    footer { font-size: 9px; }
+    .footer-main { font-size: 11px; }
+    .footer-tech { font-size: 9px; }
+    
+    /* Nasconde la 16-matrix complessa su mobile (troppo larga) */
+    .matrix-table { font-size: 9px; }
+    .matrix-table th, .matrix-table td { padding: 4px 2px; }
+  }
+  
+  /* TABLET intermedio */
+  @media (min-width: 641px) and (max-width: 900px) {
+    .portfolio-grid {
+      grid-template-columns: 1fr 1fr !important;
+    }
+    h1 { font-size: 42px; }
+  }
 </style>
 </head>
 <body>
