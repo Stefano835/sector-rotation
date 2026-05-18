@@ -476,6 +476,9 @@ def compute_sector_metrics(prices_df, bench_ticker, sector_dict):
                     'weeksFromSignal': weeks_between(sig['signal_date'], last_data_date),
                     'perfFromState': round(perf_from_state, 1) if perf_from_state is not None else None,
                     'perfFromSignal': round(perf_from_signal, 1) if perf_from_signal is not None else None,
+                    'benchFromState': round(perf_bench_state, 1) if perf_bench_state is not None else None,
+                    'benchFromSignal': round(perf_bench_signal, 1) if perf_bench_signal is not None else None,
+                    'benchTicker': bench_ticker,
                     'relFromState': round(perf_from_state - perf_bench_state, 1) if (perf_from_state is not None and perf_bench_state is not None) else None,
                     'relFromSignal': round(perf_from_signal - perf_bench_signal, 1) if (perf_from_signal is not None and perf_bench_signal is not None) else None,
                 }
