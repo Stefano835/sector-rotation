@@ -1683,6 +1683,8 @@ function renderQuadro(tableId) {
         <th>Reg.</th>
         <th>Stato</th>
         <th>Fase</th>
+        <th>Dal</th>
+        <th>Da</th>
         <th class="num">Punteggio</th>
         <th class="num">Perf segnale</th>
         <th class="num">vs Bench</th>
@@ -1708,6 +1710,8 @@ function renderQuadro(tableId) {
         <td style="color:var(--text-secondary);font-size:11px;">${flagEmoji}</td>
         <td><span class="state-badge state-${s.state.replace(/ /g,'_')}">${s.state}</span></td>
         <td><span class="stage-badge stage-${stage.replace(/[^0-9]/g,'')}">${stage}</span></td>
+        <td style="font-family:var(--mono);font-size:11px;">${fmtDate(sig.stateEntryDate)}</td>
+        <td style="color:var(--text-secondary);font-size:11px;">${fmtWeeks(sig.weeksFromState)}</td>
         <td class="num"><b style="color:var(--accent-gold);">${s.score !== undefined ? s.score.toFixed(0) : '—'}</b></td>
         <td class="num">${fmtSign(sig.perfFromState)}</td>
         <td class="num">${fmtSign(sig.relFromState)}</td>
