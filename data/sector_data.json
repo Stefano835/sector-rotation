@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-18T03:57:24.344342+00:00",
+  "updated_at": "2026-05-18T05:17:06.255025+00:00",
   "last_data_date": "2026-05-15",
   "tickers_obtained": 37,
   "tickers_total": 37,
@@ -6563,7 +6563,7 @@
             "region": "USA",
             "state": "Leader",
             "stage": "2",
-            "weight_pct": 14.2,
+            "weight_pct": 11.5,
             "score": 98.9,
             "weeks_from_state": 10,
             "perf_from_state": 28.5,
@@ -6599,7 +6599,7 @@
             "region": "EU",
             "state": "Leader",
             "stage": "2",
-            "weight_pct": 12.7,
+            "weight_pct": 10.3,
             "score": 88.3,
             "weeks_from_state": 14,
             "perf_from_state": 12.0,
@@ -6621,7 +6621,7 @@
             "region": "USA",
             "state": "Leader",
             "stage": "2",
-            "weight_pct": 12.4,
+            "weight_pct": 10.1,
             "score": 86.5,
             "weeks_from_state": 46,
             "perf_from_state": 113.8,
@@ -6657,7 +6657,7 @@
             "region": "USA",
             "state": "Leader",
             "stage": "2",
-            "weight_pct": 12.0,
+            "weight_pct": 9.7,
             "score": 83.6,
             "weeks_from_state": 16,
             "perf_from_state": 21.6,
@@ -6693,7 +6693,7 @@
             "region": "EU",
             "state": "Leader",
             "stage": "2",
-            "weight_pct": 11.6,
+            "weight_pct": 9.4,
             "score": 80.8,
             "weeks_from_state": 46,
             "perf_from_state": 51.8,
@@ -6729,7 +6729,7 @@
             "region": "EU",
             "state": "Leader",
             "stage": "2",
-            "weight_pct": 10.1,
+            "weight_pct": 8.2,
             "score": 70.6,
             "weeks_from_state": 1,
             "perf_from_state": -0.1,
@@ -6758,7 +6758,7 @@
             "region": "EU",
             "state": "Emergente",
             "stage": "2",
-            "weight_pct": 7.1,
+            "weight_pct": 5.7,
             "score": 49.3,
             "weeks_from_state": 9,
             "perf_from_state": 5.7,
@@ -6778,6 +6778,93 @@
                 "perf_3m": 12.0,
                 "pe_rel": 1.14,
                 "tag": "top_momentum"
+              }
+            ]
+          },
+          {
+            "sector_name": "Retail",
+            "sector_ticker": "EXH2",
+            "region": "EU",
+            "state": "Emergente",
+            "stage": "2",
+            "weight_pct": 5.7,
+            "score": 48.9,
+            "weeks_from_state": 10,
+            "perf_from_state": 4.4,
+            "rel_from_state": 1.8,
+            "picks_us": [],
+            "picks_it": [
+              {
+                "ticker": "OVS.MI",
+                "name": "OVS",
+                "perf_3m": 5.9,
+                "pe_rel": 1.0,
+                "tag": "top_momentum"
+              },
+              {
+                "ticker": "GEO.MI",
+                "name": "GEOX",
+                "perf_3m": -14.2,
+                "pe_rel": null,
+                "tag": null
+              }
+            ]
+          },
+          {
+            "sector_name": "Servizi finanziari",
+            "sector_ticker": "EXH3",
+            "region": "EU",
+            "state": "Emergente",
+            "stage": "2",
+            "weight_pct": 4.7,
+            "score": 40.5,
+            "weeks_from_state": 2,
+            "perf_from_state": 1.7,
+            "rel_from_state": 0.9,
+            "picks_us": [],
+            "picks_it": [
+              {
+                "ticker": "ANIM.MI",
+                "name": "ANIMA HOLDING",
+                "perf_3m": 13.4,
+                "pe_rel": 0.81,
+                "tag": "top_momentum"
+              },
+              {
+                "ticker": "BMED.MI",
+                "name": "BANCA MEDIOLANUM",
+                "perf_3m": 11.3,
+                "pe_rel": 1.0,
+                "tag": "top_momentum"
+              },
+              {
+                "ticker": "BGN.MI",
+                "name": "BANCA GENERALI",
+                "perf_3m": 6.4,
+                "pe_rel": 1.22,
+                "tag": "top_momentum"
+              }
+            ]
+          },
+          {
+            "sector_name": "Chimica",
+            "sector_ticker": "EXV7",
+            "region": "EU",
+            "state": "Emergente",
+            "stage": "2",
+            "weight_pct": 4.7,
+            "score": 40,
+            "weeks_from_state": 0,
+            "perf_from_state": 0.0,
+            "rel_from_state": 0.0,
+            "picks_us": [],
+            "picks_it": [
+              {
+                "ticker": "ECNL.MI",
+                "name": "AQUAFIL",
+                "perf_3m": -0.4,
+                "pe_rel": null,
+                "tag": "stagnant"
               }
             ]
           }
