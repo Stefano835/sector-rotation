@@ -1,10 +1,14 @@
-name: Update Sector Data
+name: Update Megatrend ETF Data
+# Aggiorna i dati di mercato e committa data/sector_data.json
+# Esecuzione automatica: ogni sabato mattina alle 08:00 italiane (06:00 UTC)
+# Esecuzione manuale: dal tab Actions cliccando "Run workflow"
+# Esecuzione su push: ad ogni commit su main (utile come "trigger di test")
 
-# Esegue lo script ogni giorno alle 22:00 UTC (dopo chiusura mercato USA)
-# dal lunedì al venerdì. Puoi anche lanciarlo a mano dalla tab Actions.
 on:
   schedule:
-    - cron: '0 22 * * 1-5'
+    - cron: '0 6 * * 6'
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -13,6 +17,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -31,14 +36,25 @@ jobs:
       - name: Run update script
         run: python scripts/update_data.py
 
+      - name: Check generated JSON
+        run: |
+          if [ ! -f data/sector_data.json ]; then
+            echo "ERROR: data/sector_data.json non generato"
+            exit 1
+          fi
+          ls -la data/sector_data.json
+          echo "Dimensione: $(wc -c < data/sector_data.json) byte"
+
       - name: Commit and push changes
         run: |
           git config --global user.name 'Sector Bot'
           git config --global user.email 'bot@users.noreply.github.com'
-          git add data/sector_data.json data/ranking_history.json
+          git add data/sector_data.json
           if git diff --staged --quiet; then
             echo "Nessuna modifica ai dati"
           else
             git commit -m "Auto-update: $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
+            echo "Commit eseguito"
           fi
+
